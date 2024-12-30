@@ -5,6 +5,7 @@ const VisitSchema = new mongoose.Schema({
   _id: { type: String, default: shortid.generate },
   name: { type: String },
   nickname: { type: String },
+  number:{type:String},
   indstrial: { type: String },
   enterprise: { type: String },
   email: { type: String },

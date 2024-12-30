@@ -31,4 +31,67 @@ router.get("/r/:id", async (req, res) => {
   }
 });
 
+
+
+router.get("/c/:id", async (req, res) => {
+  try {
+    const visit = await Visit.findById(req.params.id);
+
+    // If no visit found, create a new one
+    if (!visit) {
+      res.status(404).send("visit not vailed");
+    } else {
+      console.log(req.session);
+      if (!req.session.user) {
+        // User is NOT logged in
+        if (visit.registered) {
+          // The visit is registered, so check if approved
+          if (!visit.approved) {
+            // If not approved yet, show "please wait" page
+            return res.render("pleaseWait", { visit });
+          }
+          // If approved, show sign-in page
+          return res.render("storage/signin", { id: req.params.id });
+        } else {
+          // If not registered, show registration page
+          return res.render("visitRegestery", { visit: visit });
+        }
+      } else {
+        // We have a session user, proceed with existing logic
+        try {
+          // find the default day
+          const defaultDay = await Day.findOne({ isDefault: true });
+          if (!defaultDay) {
+            return res.status(404).send("No default day found");
+          }
+
+          // read files in `uploads/<defaultDay.name>`
+          const dayFolderPath = path.join(baseUploadPath, defaultDay.name);
+          if (!fs.existsSync(dayFolderPath)) {
+            return res
+              .status(404)
+              .send(`Folder for default day '${defaultDay.name}' does not exist`);
+          }
+
+          const files = fs.readdirSync(dayFolderPath);
+          return res.render("storage/defaultDay", {
+            dayName: defaultDay.name,
+            files,
+          });
+        } catch (err) {
+          console.error("Error in GET /cloud/default:", err);
+          return res.status(500).send("Server error");
+        }
+      }
+
+    }
+
+    // If visit is found, proceed
+  } catch (error) {
+    console.error("Error in GET /reg/:id:", error);
+    return res.status(500).send("Server error");
+  }
+});
+
+
 module.exports = router;

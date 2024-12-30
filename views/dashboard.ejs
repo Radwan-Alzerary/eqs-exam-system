@@ -192,7 +192,7 @@
               headers: {
                 "Content-Type": "application/json",
               },
-              body: JSON.stringify({ indstrial }),
+              body: JSON.stringify({ indstrial,inviteNumber }),
             });
             if (!response.ok) {
               throw new Error(`HTTP error! Status: ${response.status}`);
@@ -201,7 +201,7 @@
 
             generateBarcode(data._id, `barcode${i}`);
             generateQrBarcode(
-              `https://eqs.Niuraiq/c/${data._id}`,
+              `https://eqs.Niuraiq.com/c/${data._id}`,
               `qrcode${i}`
             );
           } catch (err) {
@@ -234,7 +234,7 @@
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ indstrial }),
+          body: JSON.stringify({ indstrial,inviteNumber }),
         });
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);

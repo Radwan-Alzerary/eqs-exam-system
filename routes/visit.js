@@ -13,9 +13,9 @@ router.get("/", async (req, res) => {
 });
 router.post("/generate", async (req, res) => {
   const visit = new Visit();
-  if (req.body.indstrial) {
-    visit.indstrial = req.body.indstrial;
-  }
+  console.log(req.body)
+    visit.indstrial = req.body.indstrial || "";
+    visit.number = req.body.inviteNumber || 0;
   await visit.save();
   res.json(visit);
 });
