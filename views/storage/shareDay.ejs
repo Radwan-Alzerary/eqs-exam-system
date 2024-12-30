@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Shared - <%= dayName %></title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background: #f5f5f5;
+    }
+    h1 {
+      margin-bottom: 10px;
+    }
+    .card-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+    .card {
+      background: #fff;
+      width: 300px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .card-header {
+      background: #f0f0f0;
+      padding: 10px;
+      font-weight: bold;
+    }
+    .card-body {
+      padding: 10px;
+      text-align: center;
+      min-height: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .card-body iframe,
+    .card-body video,
+    .card-body img {
+      max-width: 100%;
+      max-height: 180px;
+    }
+    .card-footer {
+      background: #fafafa;
+      padding: 10px;
+      text-align: center;
+    }
+    .card-footer a {
+      margin: 0 5px;
+      text-decoration: none;
+      color: #007BFF;
+    }
+    .card-footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <h1>Shared Folder: <%= dayName %></h1>
+  <div class="card-container">
+    <% files.forEach(fileName => {
+      const ext = fileName.split('.').pop().toLowerCase();
+    %>
+      <div class="card">
+        <div class="card-header"><%= fileName %></div>
+        <div class="card-body">
+          <% if (ext === 'pdf') { %>
+            <!-- PDF in an iframe -->
+            <iframe 
+              src="/cloud/view/<%= dayName %>/<%= fileName %>" 
+              width="100%" 
+              height="200px" 
+              style="border:none;"
+            ></iframe>
+          <% } else if (ext === 'mp4') { %>
+            <!-- Video player -->
+            <video 
+              src="/cloud/view/<%= dayName %>/<%= fileName %>" 
+              controls
+            ></video>
+          <% } else if (['jpg', 'jpeg', 'png', 'gif'].includes(ext)) { %>
+            <!-- Image preview -->
+            <img 
+              src="/cloud/view/<%= dayName %>/<%= fileName %>" 
+              alt="<%= fileName %>"
+            />
+          <% } else if (ext === 'doc' || ext === 'docx') { %>
+            <!-- Word doc placeholder -->
+            <p>Word Document</p>
+          <% } else { %>
+            <p>Unknown file type</p>
+          <% } %>
+        </div>
+        <div class="card-footer">
+          <a href="/cloud/file/<%= dayName %>/<%= fileName %>" target="_blank">Download</a>
+          <a href="/cloud/view/<%= dayName %>/<%= fileName %>" target="_blank">View</a>
+        </div>
+      </div>
+    <% }) %>
+  </div>
+</body>
+</html>

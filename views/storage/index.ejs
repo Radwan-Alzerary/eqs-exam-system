@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منصة ادارة حساب المشتركين</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Tajawal', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Tajawal', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-4xl font-bold text-gray-800 mb-8 text-right">فهرس السحابة</h1>
+        
+        <nav class="bg-white shadow-md rounded-lg p-4 mb-8">
+            <ul class="flex space-x-4 space-x-reverse">
+                <li>
+                    <a href="/cloud/createDay" class="flex items-center text-blue-600 hover:text-blue-800 transition duration-300">
+                        <span class="ml-2">إنشاء يوم جديد</span>
+                        <i data-feather="plus-circle"></i>
+                    </a>
+                </li>
+                <li>
+                    <a href="/cloud/upload" class="flex items-center text-blue-600 hover:text-blue-800 transition duration-300">
+                        <span class="ml-2">رفع ملف</span>
+                        <i data-feather="upload"></i>
+                    </a>
+                </li>
+                <li>
+                    <a href="/cloud/default" class="flex items-center text-blue-600 hover:text-blue-800 transition duration-300">
+                        <span class="ml-2">عرض اليوم الافتراضي</span>
+                        <i data-feather="calendar"></i>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="bg-white shadow-md rounded-lg p-6">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4 text-right">جميع الأيام في قاعدة البيانات</h2>
+            <% if (days.length === 0) { %>
+                <p class="text-gray-600 text-right">لم يتم إنشاء أيام بعد.</p>
+            <% } else { %>
+                <ul class="space-y-4">
+                    <% days.forEach(day => { %>
+                        <li class="flex items-center justify-between bg-gray-50 p-4 rounded-lg">
+                            <div>
+                                <% if (day.isDefault) { %>
+                                    <span class="bg-green-100 text-green-800 text-sm font-medium px-2.5 py-0.5 rounded">افتراضي</span>
+                                <% } else { %>
+                                    <button onclick="setDefault('<%= day._id %>')" class="bg-blue-500 hover:bg-blue-600 text-white text-sm font-medium px-3 py-1 rounded transition duration-300">
+                                        تعيين كافتراضي
+                                    </button>
+                                <% } %>
+                            </div>
+                            <div class="flex items-center">
+                                <strong class="text-lg text-gray-800 ml-3"><%= day.name %></strong>
+                                <i data-feather="folder" class="text-yellow-500"></i>
+                            </div>
+                        </li>
+                    <% }) %>
+                </ul>
+            <% } %>
+        </div>
+    </div>
+
+    <script>
+        feather.replace();
+
+        function setDefault(dayId) {
+            fetch(`/cloud/setDefault/${dayId}`, { method: 'POST' })
+                .then(response => {
+                    if (response.ok) {
+                        window.location.reload();
+                    } else {
+                        alert('فشل في تعيين اليوم الافتراضي. يرجى المحاولة مرة أخرى.');
+                    }
+                })
+                .catch(error => {
+                    console.error('خطأ:', error);
+                    alert('حدث خطأ. يرجى المحاولة مرة أخرى.');
+                });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@tarekraafat/autocomplete.js@10.2.7/dist/css/autoComplete.02.min.css"
+    />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+    <!-- <script src="https://cdn.rawgit.com/rainabba/jquery-table2excel/1.1.0/dist/jquery.table2excel.min.js"></script> -->
+
+    <script src="/js/jquery-3.6.3.min.js"></script>
+    <script src="/js/qrcode.min.js"></script>
+    <link href="/css/style.css" rel="stylesheet" />
+    <!-- <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script> -->
+
+    <!-- <script src="/js/JsBarcode.all.min.js"></script> -->
+    <link href="/dist/output.css" rel="stylesheet" />
+    <!-- <script src="
+https://cdn.jsdelivr.net/npm/barcode-generator@0.1.0/index.min.js
+"></script> -->
+
+    <link href="/css/all.min.css" rel="stylesheet" />
+    <title>Document</title>
+    <style></style>
+  </head>
+  <body>
+    <div id="printableDiv" class="hidden">
+      <div
+        class="flex flex-col justify-center items-center"
+        style="
+          width: 2in;
+          height: 0.9in;
+          overflow: hidden;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          justify-items: center;
+          align-items: center;
+        "
+      >
+        <p style="margin: 0; font-size: 1.4rem">الدكتور</p>
+        <a style="font-size: 1.6rem; font-weight: bold">عباس محمد خلف</a>
+      </div>
+    </div>
+    <div
+      class="fixed flex flex-col justify-center gap-5 items-center w-1/2 h-1/2 bg-white p-5 rounded-xl z-50"
+      style="left: 50%; top: 50%; transform: translate(-50%, -50%)"
+    >
+      <div class="mb-6">
+        <label
+          for="email"
+          class="block mb-2 text-base font-bold my-4 text-gray-900 text-center dark:text-white"
+          >الاسم</label
+        >
+        <input
+          type="text"
+          name="name"
+          id="userName"
+          class="bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+          placeholder="يرجى ادخال الاسم"
+          required
+        />
+      </div>
+      <select id="kneeType">
+        <option value="الدكتور">الدكتور</option>
+        <option value="الاستاذ">الاستاذ</option>
+        <option value="السيد">السيد</option>
+        <option value="السيدة">السيدة</option>
+        <option value="مدير مبيعات">مدير مبيعات</option>
+        <option value="المهندس">المهندس</option>
+        <option value="الصيدلاني">الصيدلاني</option>
+        <option value="الصيدلانية">الصيدلانية</option>
+        <option value="البيلوجي">البيلوجي</option>
+        <option value="  "> </option>
+      </select>
+      <button
+        onclick="handleNewUser()"
+        class="text-white flex bg-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full text-center px-5 py-2.5 justify-center items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+      >
+        اضافة
+      </button>
+    </div>
+    <form>
+      <div id="download" class="cursor-pointer" onclick="exportCSVExcel()">
+        تنزيل
+      </div>
+      <label
+        for="default-search"
+        class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white"
+        >Search</label
+      >
+      <div class="relative">
+        <div
+          class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none"
+        >
+          <svg
+            class="w-4 h-4 text-gray-500 dark:text-gray-400"
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 20 20"
+          >
+            <path
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
+            />
+          </svg>
+        </div>
+        <input
+          type="search"
+          oninput="searchHandel(event)"
+          id="default-search"
+          class="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+          placeholder="Search Mockups, Logos..."
+          required
+        />
+        <button
+          type="submit"
+          class="text-white absolute end-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+        >
+          Search
+        </button>
+      </div>
+    </form>
+    <div class="overflow-scroll h-[90%]">
+      <div
+        id="table-conatainer"
+        class="relative overflow-x-auto shadow-md sm:rounded-lg"
+      >
+        <table
+          id="tablelist"
+          class="striped"
+          class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400"
+        >
+          <thead
+            class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400"
+          >
+            <tr>
+              <th scope="col" class="px-6 py-3">الاسم</th>
+              <th scope="col" class="px-6 py-3">الكنية</th>
+              <th scope="col" class="px-6 py-3">
+                <div class="flex items-center">المسمى الوظيفي</div>
+              </th>
+              <th scope="col" class="px-6 py-3">
+                <div class="flex items-center">الايميل</div>
+              </th>
+              <th scope="col" class="px-6 py-3">
+                <div class="flex items-center">المؤسسة</div>
+              </th>
+              <th scope="col" class="px-6 py-3">
+                <div class="flex items-center text-center justify-center">
+                  تاريخ التسجيل
+                </div>
+              </th>
+              <th scope="col" class="px-6 py-3">
+                <div class="flex items-center">عنونة الدعوة</div>
+              </th>
+            </tr>
+          </thead>
+          <tbody id="insideTable">
+            <%visits.forEach((visit,index)=>{%>
+            <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+              <th
+                scope="row"
+                class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+              >
+                <%=visit.name%>
+              </th>
+              <th
+                scope="row"
+                class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+              >
+                <%=visit.nickname%>
+              </th>
+
+              <td class="px-6 py-4"><%=visit.CareerTitle%></td>
+              <td class="px-6 py-4"><%=visit.email%></td>
+              <td class="px-6 py-4"><%=visit.enterprise%></td>
+              <td class="px-6 py-4 text-center"><%=visit.registeredDate%></td>
+              <td class="px-6 py-4"><%=visit.indstrial%></td>
+              <td
+                class="px-6 py-4"
+                onClick="printDiv('<%=visit.name%>','<%=visit.nickname%>')"
+                style="color: green; cursor: pointer"
+              >
+                طباعة
+              </td>
+
+              <%if(visit.coming ){%>
+
+              <td class="px-6 py-4" style="color: green">تم تاكيد حضورة</td>
+              <%}else{%>
+              <td
+                class="px-6 py-4"
+                onClick="handelOnComingAccept('<%=visit.id%>')"
+                style="color: green; cursor: pointer"
+              >
+                تاكيد حضور
+              </td>
+
+              <%}%>
+            </tr>
+            <%})%>
+          </tbody>
+        </table>
+      </div>
+      <!-- <%- include('footer',{currentpage:'dashboard'}); %> -->
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+    <script src="https://cdn.rawgit.com/rainabba/jquery-table2excel/1.1.0/dist/jquery.table2excel.min.js"></script>
+    <script>
+  function handleNewUser() {
+    // Get input values
+    var name = document.getElementById("userName").value;
+    var kneeType = document.getElementById("kneeType").value;
+
+    // Prepare data for the POST request
+    var data = {
+      name: name,
+      kneeType: kneeType
+    };
+
+    // Make the fetch POST request
+    fetch("/visit/manualnew/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    })
+      .then(response => response.json())
+      .then(data => {
+        refreshPage()
+        // Handle the response here if needed
+      })
+      .catch(error => {
+       refreshPage()
+
+        // Handle errors here
+        console.error('Error:', error);
+      });
+  }
+    </script>
+    <script>
+      function printDiv(name, nickname) {
+        cleaned_name = name.replace("د. ", "");
+
+        console.log(name, nickname);
+        var content = `<div
+        class="flex flex-col justify-center items-center"
+        style="
+          width: 50mm;
+          height: 20mm;
+          overflow: hidden;
+          display: flex;
+          text-align:center;
+          flex-direction: column;
+          justify-content: center;
+          justify-items: center;
+          align-items: center;
+        "
+      >
+        <p style="margin: 0; font-size: 1.3rem">${nickname}</p>
+        <a style="font-size: 1.9rem; font-weight: bold">${cleaned_name}</a>
+      </div>
+`;
+        var printWindow = window.open("", "", "width=600,height=600");
+
+        printWindow.document.open();
+        printWindow.document.write(
+          "<html><head><title>Print</title></head><body>" +
+            content +
+            "</body></html>"
+        );
+        printWindow.document.close();
+
+        // Add onafterprint and onbeforeprint events to close the window
+        printWindow.onafterprint = function () {
+          printWindow.close();
+        };
+
+        printWindow.onbeforeprint = function () {
+          // You can add additional actions before printing if needed
+        };
+
+        printWindow.print();
+      }
+    </script>
+
+    <script>
+      function exportCSVExcel() {
+        $("#tablelist").table2excel({
+          exclude: ".no-export",
+          filename: "download.xls",
+          fileext: ".xls",
+          exclude_links: true,
+          exclude_inputs: true,
+        });
+      }
+
+      function exportToExcel() {
+        var location = "data:application/vnd.ms-excel;base64,";
+        var excelTemplate =
+          "<html> " +
+          "<head> " +
+          '<meta http-equiv="content-type" content="text/plain; charset=UTF-8"/> ' +
+          "</head> " +
+          "<body> " +
+          document.getElementById("table-conatainer").innerHTML +
+          "</body> " +
+          "</html>";
+        window.location.href = location + window.btoa(excelTemplate);
+      }
+function refreshPage(){
+        fetch(`/visit/nameSearch/`)
+          .then((response) => response.json())
+          .then((data) => {
+            console.log(data);
+            let items = "";
+            data.forEach((element) => {
+              let commingState = "";
+              if (element.coming) {
+                commingState =
+                  '<td class="px-6 py-4" style ="color:green;">تم تاكيد حضورة</td>';
+              } else {
+                commingState = ` <td class="px-6 py-4" onClick="handelOnComingAccept('${element._id}')" style ="color:green;cursor: pointer;">تاكيد حضور</td>`;
+              }
+
+              items += `            
+              <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700" >
+              <td class="px-6 py-4">
+                ${element.name}</td>
+              <td class="px-6 py-4">
+                ${element.CareerTitle}</td>
+              <td class="px-6 py-4"> ${element.email}</td>
+              <td class="px-6 py-4">${element.enterprise}</td>
+              <td class="px-6 py-4 text-center">${element.registeredDate}</td>
+              <td class="px-6 py-4">${element.indstrial}</td>
+              ${commingState}
+            </tr>
+            `;
+            });
+            $("#insideTable").html(items);
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            // Handle errors
+          });
+
+}
+      function searchHandel(event) {
+        const inputElement = event.target;
+        console.log(inputElement.value);
+        fetch(`/visit/nameSearch/${inputElement.value}`)
+          .then((response) => response.json())
+          .then((data) => {
+            console.log(data);
+            let items = "";
+            data.forEach((element) => {
+              let commingState = "";
+              if (element.coming) {
+                commingState =
+                  '<td class="px-6 py-4" style ="color:green;">تم تاكيد حضورة</td>';
+              } else {
+                commingState = ` <td class="px-6 py-4" onClick="handelOnComingAccept('${element._id}')" style ="color:green;cursor: pointer;">تاكيد حضور</td>`;
+              }
+
+              items += `            
+              <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700" >
+              <td class="px-6 py-4">
+                ${element.name}</td>
+              <td class="px-6 py-4">
+                ${element.CareerTitle}</td>
+              <td class="px-6 py-4"> ${element.email}</td>
+              <td class="px-6 py-4">${element.enterprise}</td>
+              <td class="px-6 py-4 text-center">${element.registeredDate}</td>
+              <td class="px-6 py-4">${element.indstrial}</td>
+              ${commingState}
+            </tr>
+            `;
+            });
+            $("#insideTable").html(items);
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            // Handle errors
+          });
+      }
+      function handelOnComingAccept(id) {
+        console.log(id);
+        fetch("/visit/comingaccept/", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            id: id,
+          }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            location.reload();
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            // Handle errors
+          });
+      }
+    </script>
+    <script>
+      // Initialize variables to store barcode data
+      let barcode = "";
+      let originBarcode = "";
+
+      // Function to handle key press events
+      const handleKeyPress = (event) => {
+        // Check for a special character (e.g., Enter) to determine the end of the barcode
+        if (event.key === "Enter") {
+          // Do something with the barcode data (e.g., send it to a server)
+          if (barcode !== "") {
+            console.log("Barcode Scanned:", barcode);
+            const currentUrl = window.location.href;
+            console.log("Current URL:", currentUrl);
+            const url = new URL(currentUrl);
+            const searchParams = new URLSearchParams(url.search);
+            originBarcode = barcode;
+            window.location.href = `http://78.141.210.148:4000/visit/check/${barcode}`;
+            barcode = "";
+          }
+        } else {
+          // Append the scanned character to the barcode string
+          barcode += event.key;
+        }
+      };
+
+      // Function to reset the barcode after a timeout
+      const resetBarcode = () => {
+        barcode = "";
+        console.log(barcode);
+      };
+      setTimeout(resetBarcode, 20);
+      function logMessage() {
+        console.log("Logging message every 50ms");
+      }
+
+      // Set an interval to call logMessage every 50ms
+      const intervalId = setInterval(resetBarcode, 50);
+
+      // You can clear the interval if needed after a certain duration
+      // For example, clear the interval after 3000ms (3 seconds)
+
+      // Set a timeout to reset the barcode after 20 milliseconds
+
+      // Add an event listener to capture keyboard input
+      window.addEventListener("keypress", handleKeyPress);
+
+      // Function to clean up the event listener when needed
+      const removeKeyListener = () => {
+        window.removeEventListener("keypress", handleKeyPress);
+      };
+    </script>
+  </body>
+</html>

@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الموافقة على الزوار</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Tajawal', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Tajawal', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold text-gray-800 mb-8 text-right">إدارة الزوار</h1>
+        
+        <!-- Unapproved Visits Section -->
+        <h2 class="text-2xl font-bold text-gray-800 mb-4 text-right">الزوار غير المعتمدين</h2>
+        <% if (unapprovedVisits && unapprovedVisits.length > 0) { %>
+            <div class="bg-white shadow-md rounded-lg overflow-hidden mb-8">
+                <ul class="divide-y divide-gray-200">
+                    <% unapprovedVisits.forEach((visit) => { %>
+                        <li class="p-4 hover:bg-gray-50 transition duration-150 ease-in-out" id="visit-<%= visit._id %>">
+                            <div class="flex flex-col items-center">
+                                <div class="w-full flex items-center justify-between mb-2">
+                                    <button onclick="approveVisitor('<%= visit._id %>')" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                        <i data-feather="check" class="ml-2 h-4 w-4"></i>
+                                        موافقة
+                                    </button>
+                                    <% if (visit.enterprise) { %>
+                                      <div class="text-center">
+                                          <span class="font-bold text-lg text-indigo-600"><%= visit.enterprise %></span>
+                                      </div>
+                                    <% } %>
+                                    <div class="flex items-center">
+                                        <div class="mr-4 text-right">
+                                            <div class="text-sm font-medium text-gray-900"><%= visit.name %></div>
+                                            <div class="text-sm text-gray-500"><%= visit.email %></div>
+                                            <div class="text-sm text-gray-500">
+                                                <% if (visit.enterprise) { %>
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                                        مؤسسة
+                                                    </span>
+                                                <% } else { %>
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                                        فرد
+                                                    </span>
+                                                <% } %>
+                                            </div>
+                                        </div>
+                                        <div class="flex-shrink-0">
+                                            <img class="h-10 w-10 rounded-full" src="https://ui-avatars.com/api/?name=<%= encodeURIComponent(visit.name) %>&background=random" alt="<%= visit.name %>">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    <% }) %>
+                </ul>
+            </div>
+        <% } else { %>
+            <div class="bg-white shadow-md rounded-lg p-6 text-center mb-8">
+                <i data-feather="check-circle" class="mx-auto h-12 w-12 text-green-500 mb-4"></i>
+                <p class="text-xl text-gray-600">لا يوجد زوار غير معتمدين.</p>
+            </div>
+        <% } %>
+
+        <!-- Approved Visits Section -->
+        <h2 class="text-2xl font-bold text-gray-800 mb-4 text-right">الزوار المعتمدون</h2>
+        <% if (approvedVisits && approvedVisits.length > 0) { %>
+            <div class="bg-white shadow-md rounded-lg overflow-hidden">
+                <ul class="divide-y divide-gray-200">
+                    <% approvedVisits.forEach((visit) => { %>
+                        <li class="p-4 hover:bg-gray-50 transition duration-150 ease-in-out" id="approved-visit-<%= visit._id %>">
+                            <div class="flex flex-col items-center">
+                                <div class="w-full flex items-center justify-between mb-2">
+                                  <div>
+
+                                    <button onclick="unapproveVisitor('<%= visit._id %>')" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                                        <i data-feather="x" class="ml-2 h-4 w-4"></i>
+                                        إلغاء الموافقة
+                                    </button>
+                                    <button onclick="showChangePasswordModal('<%= visit._id %>')" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                      <i data-feather="key" class="ml-2 h-4 w-4"></i>
+                                      تغيير كلمة المرور
+                                  </button>
+                                </div>
+
+                                    <% if (visit.enterprise) { %>
+                                      <div class="text-center">
+                                          <span class="font-bold text-lg text-indigo-600"><%= visit.enterprise %></span>
+                                      </div>
+                                    <% } %>
+                                    <div class="flex items-center">
+                                        <div class="mr-4 text-right">
+                                            <div class="text-sm font-medium text-gray-900"><%= visit.name %></div>
+                                            <div class="text-sm text-gray-500"><%= visit.email %></div>
+                                            <div class="text-sm text-gray-500">
+                                                <% if (visit.enterprise) { %>
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                                        مؤسسة
+                                                    </span>
+                                                <% } else { %>
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                                        فرد
+                                                    </span>
+                                                <% } %>
+                                            </div>
+                                        </div>
+                                        <div class="flex-shrink-0">
+                                            <img class="h-10 w-10 rounded-full" src="https://ui-avatars.com/api/?name=<%= encodeURIComponent(visit.name) %>&background=random" alt="<%= visit.name %>">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    <% }) %>
+                </ul>
+            </div>
+        <% } else { %>
+            <div class="bg-white shadow-md rounded-lg p-6 text-center">
+                <i data-feather="user-x" class="mx-auto h-12 w-12 text-gray-400 mb-4"></i>
+                <p class="text-xl text-gray-600">لا يوجد زوار معتمدون.</p>
+            </div>
+        <% } %>
+    </div>
+
+    <div id="change-password-modal" class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center hidden">
+      <div class="bg-white p-6 rounded-lg shadow-lg w-96">
+          <h2 class="text-xl font-bold text-gray-800 mb-4">تغيير كلمة المرور</h2>
+          <form id="change-password-form">
+              <input type="hidden" id="change-password-user-id">
+              <div class="mb-4">
+                  <label for="new-password" class="block text-sm font-medium text-gray-700">كلمة المرور الجديدة</label>
+                  <input id="new-password" type="password" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
+              </div>
+              <div class="mb-4">
+                  <label for="confirm-password" class="block text-sm font-medium text-gray-700">تأكيد كلمة المرور</label>
+                  <input id="confirm-password" type="password" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
+              </div>
+              <div class="flex justify-end">
+                  <button type="button" onclick="closeChangePasswordModal()" class="bg-gray-300 text-gray-800 px-4 py-2 rounded-lg mr-2">إلغاء</button>
+                  <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg">تغيير</button>
+              </div>
+          </form>
+      </div>
+  </div>
+  
+
+    <script>
+        feather.replace();
+        function showChangePasswordModal(userId) {
+    document.getElementById('change-password-user-id').value = userId;
+    document.getElementById('change-password-modal').classList.remove('hidden');
+}
+
+function closeChangePasswordModal() {
+    document.getElementById('change-password-modal').classList.add('hidden');
+    document.getElementById('change-password-form').reset();
+}
+
+document.getElementById('change-password-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    const userId = document.getElementById('change-password-user-id').value;
+    const newPassword = document.getElementById('new-password').value;
+    const confirmPassword = document.getElementById('confirm-password').value;
+
+    if (newPassword !== confirmPassword) {
+        alert('كلمتا المرور غير متطابقتين');
+        return;
+    }
+
+    fetch(`/cloud/change-password/${userId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ newPassword })
+    })
+        .then(response => {
+            if (response.ok) {
+                alert('تم تغيير كلمة المرور بنجاح');
+                closeChangePasswordModal();
+            } else {
+                alert('فشل تغيير كلمة المرور. يرجى المحاولة مرة أخرى.');
+            }
+        })
+        .catch(error => {
+            console.error('خطأ:', error);
+            alert('حدث خطأ. يرجى المحاولة مرة أخرى.');
+        });
+});
+
+        function approveVisitor(visitorId) {
+            fetch(`/admin/approve/${visitorId}/doapprove`, { method: 'POST' })
+                .then(response => {
+                    if (response.ok) {
+                        const visitorElement = document.getElementById(`visit-${visitorId}`);
+                        visitorElement.classList.add('bg-green-100');
+                        setTimeout(() => {
+                            visitorElement.remove();
+                            if (document.querySelectorAll('#unapproved-visits li').length === 0) {
+                                location.reload();
+                            }
+                        }, 500);
+                    } else {
+                        alert('فشلت الموافقة على الزائر. يرجى المحاولة مرة أخرى.');
+                    }
+                })
+                .catch(error => {
+                    console.error('خطأ:', error);
+                    alert('حدث خطأ. يرجى المحاولة مرة أخرى.');
+                });
+        }
+
+        function unapproveVisitor(visitorId) {
+            fetch(`/admin/unapprove/${visitorId}`, { method: 'POST' })
+                .then(response => {
+                    if (response.ok) {
+                        const visitorElement = document.getElementById(`approved-visit-${visitorId}`);
+                        visitorElement.classList.add('bg-red-100');
+                        setTimeout(() => {
+                            visitorElement.remove();
+                            if (document.querySelectorAll('#approved-visits li').length === 0) {
+                                location.reload();
+                            }
+                        }, 500);
+                    } else {
+                        alert('فشل إلغاء الموافقة على الزائر. يرجى المحاولة مرة أخرى.');
+                    }
+                })
+                .catch(error => {
+                    console.error('خطأ:', error);
+                    alert('حدث خطأ. يرجى المحاولة مرة أخرى.');
+                });
+        }
+    </script>
+</body>
+</html>
+

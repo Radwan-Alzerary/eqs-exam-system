@@ -1,0 +1,42 @@
+{
+  "name": "visit-system",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "start": "nodemon app.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "tailwind:css": "npx tailwindcss -i ./views/input.css -o ./public/dist/output.css --watch"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "compression": "^1.7.4",
+    "connect-flash": "^0.1.1",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "cosmiconfig": "^8.3.6",
+    "dotenv": "^16.3.1",
+    "ejs": "^3.1.10",
+    "express": "^4.21.2",
+    "express-session": "^1.17.3",
+    "flowbite": "^2.1.1",
+    "mongoos": "^0.0.1-security",
+    "mongoose": "^8.0.1",
+    "morgan": "^1.10.0",
+    "multer": "^1.4.5-lts.1",
+    "node-html-to-image": "^4.0.0",
+    "node-thermal-printer": "^4.4.1",
+    "nodemon": "^3.0.1",
+    "passport": "^0.6.0",
+    "passport-local": "^1.0.0",
+    "path": "^0.12.7",
+    "postcss": "^8.4.31",
+    "postcss-cli": "^10.1.0",
+    "puppeteer-core": "^21.5.2",
+    "sharp": "^0.32.6",
+    "shortid": "^2.2.16",
+    "tailwindcss": "^3.3.5"
+  }
+}

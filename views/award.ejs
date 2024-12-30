@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>تايمر واسم الفائز</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    #timer {
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+
+    #winner {
+      display: none;
+      font-size: 36px;
+      color: green;
+      animation: fadeIn 2s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="timer" style="font-size: 12rem;">10</div>
+  <div id="winner" style="font-size: 9rem;">الفائز: <%=visit[0].name%>!</div>
+
+  <script>
+    // عداد التايمر
+    let countdown = 10;
+
+    const timerElement = document.getElementById('timer');
+    const winnerElement = document.getElementById('winner');
+
+    // تحديث قيمة التايمر وعرض اسم الفائز بعد انتهاء الوقت
+    function updateTimer() {
+      if (countdown > 0) {
+        timerElement.textContent = `${countdown}`;
+        countdown--;
+      } else {
+        timerElement.style.display = 'none';
+        winnerElement.style.display = 'block';
+      }
+    }
+
+    // تحديث التايمر كل ثانية
+    setInterval(updateTimer, 1000);
+  </script>
+
+</body>
+</html>

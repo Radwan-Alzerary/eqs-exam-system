@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الندوة العلمية السابعة لقسم الصيدلة</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Tajawal', sans-serif;
+        }
+        .error-message {
+            color: #e53e3e;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-b from-gray-50 to-gray-100 min-h-screen">
+    <div class="container mx-auto py-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-3xl mx-auto">
+            <div class="bg-white shadow-2xl rounded-3xl overflow-hidden">
+                <!-- Header Section -->
+                <div class="bg-gradient-to-r from-blue-600 to-blue-800 px-6 py-8 text-center text-white relative overflow-hidden">
+                    <div class="absolute inset-0 bg-black opacity-10"></div>
+                    <img src="https://upload.wikimedia.org/wikipedia/ar/5/5a/%D8%B4%D8%B9%D8%A7%D8%B1_%D8%A7%D9%84%D8%AC%D8%A7%D9%85%D8%B9%D8%A9_%D8%A7%D9%84%D8%AA%D9%82%D9%86%D9%8A%D8%A9_%D8%A7%D9%84%D8%B4%D9%85%D8%A7%D9%84%D9%8A%D8%A9.jpg"
+                         alt="شعار الجامعة التقنية الشمالية" class="mx-auto mb-6 w-32 h-32 object-contain relative z-10">
+                    <h3 class="text-xl font-bold mb-3 relative z-10">ايمانا منا برفع قدرات القيادات الجامعية و تعزيزا لدورهم الكبير في ادارة الكليات و تشكيلات الجامعة</h3>
+                    <h2 class="text-4xl font-bold relative z-10">التسجيل لحضور الدورات التطويرية لتعزيز القدرات </h2>
+                </div>
+
+                <!-- Form Section -->
+                <form id="registrationForm" class="p-8 space-y-6">
+                    <input type="hidden" name="id" value="<%= visit.id %>">
+
+                    <!-- Name Field -->
+                    <div>
+                        <label for="name" class="block text-right text-lg font-medium text-gray-700 mb-2">
+                            الاسم الرباعي
+                        </label>
+                        <input type="text" name="name" id="name" required
+                               class="w-full px-4 py-3 text-right rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                               placeholder="يرجى ادخال الاسم الرباعي">
+                        <p id="nameError" class="error-message hidden">يرجى إدخال الاسم الرباعي الكامل</p>
+                    </div>
+
+                    <!-- Specialization Field -->
+                    <div>
+                        <label for="enterprise" class="block text-right text-lg font-medium text-gray-700 mb-2">
+                            التشكيل (الكلية/المعهد)
+                        </label>
+                        <input type="text" name="enterprise" id="enterprise" required
+                               class="w-full px-4 py-3 text-right rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                               placeholder="يرجى ادخال التشكيل">
+                    </div>
+
+                    <!-- Email Field -->
+                    <div>
+                        <label for="email" class="block text-right text-lg font-medium text-gray-700 mb-2">
+                            البريد الالكتروني
+                        </label>
+                        <input type="email" name="email" id="email" required
+                               class="w-full px-4 py-3 text-right rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                               placeholder="يرجى ادخال بريد الكتروني صحيح">
+                        <p id="emailError" class="error-message hidden">يرجى ادخال البريد الجامعي الرسمي </p>
+                    </div>
+
+                    <!-- Password Field -->
+                    <div>
+                        <label for="password" class="block text-right text-lg font-medium text-gray-700 mb-2">
+                            كلمة المرور
+                        </label>
+                        <input type="password" name="password" id="password" required
+                               class="w-full px-4 py-3 text-right rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                               placeholder="يرجى ادخال كلمة المرور">
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit"
+                            class="w-full bg-blue-600 text-white py-4 px-6 rounded-lg font-medium text-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors transform hover:scale-105">
+                        التسجيل
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("registrationForm").addEventListener("submit", function (event) {
+            event.preventDefault();
+
+            // Validate name
+            const name = document.getElementById("name").value;
+            const nameError = document.getElementById("nameError");
+            if (name.trim().split(/\s+/).length < 4) {
+                nameError.classList.remove("hidden");
+                return;
+            } else {
+                nameError.classList.add("hidden");
+            }
+
+            // Validate email
+            const email = document.getElementById("email").value;
+            const emailError = document.getElementById("emailError");
+            if (!email.endsWith("@ntu.edu.iq")) {
+                emailError.classList.remove("hidden");
+                return;
+            } else {
+                emailError.classList.add("hidden");
+            }
+
+            // Get the form data
+            const formData = new FormData(event.target);
+
+            // Convert FormData to JSON object
+            const jsonObject = {};
+            formData.forEach((value, key) => {
+                jsonObject[key] = value;
+            });
+
+            // Extract the ID from the current URL
+            const url = window.location.href;
+            const id = url.substring(url.lastIndexOf("/") + 1);
+
+            // Add the ID to the JSON object
+            jsonObject.id = id;
+
+            // Make a POST request
+            fetch("/visit/reg/update", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json", // Set content type to JSON
+                },
+                body: JSON.stringify(jsonObject), // Convert JSON object to string
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    // Handle the response data
+                    console.log(data);
+                    alert("تم التسجيل بنجاح!"); // Success message
+                })
+                .catch((error) => {
+                    // Handle errors
+                    location.reload();
+                    console.error("Error:", error);
+                });
+        });
+    </script>
+</body>
+</html>
+

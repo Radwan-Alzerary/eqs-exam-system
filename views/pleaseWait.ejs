@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Approval Pending</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap');
+        body {
+            font-family: 'Tajawal', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-b from-blue-100 to-blue-200 min-h-screen flex items-center justify-center">
+    <div id="approval-pending" class="text-center p-8 bg-white rounded-lg shadow-lg max-w-md w-full opacity-0 transform -translate-y-4 transition-all duration-500">
+        <h1 class="text-3xl font-bold mb-4 text-blue-600">تم استلام طلبك</h1>
+        <p class="text-lg mb-6 text-gray-600">يُرجى الانتظار حتى يتم الموافقة على طلبك.</p>
+        <button id="refresh-button" class="bg-blue-500 text-white px-6 py-2 rounded-full font-semibold flex items-center justify-center space-x-2 w-full hover:bg-blue-600 transition-colors duration-300">
+            <span>تحديث</span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.3"/>
+            </svg>
+        </button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const approvalPending = document.getElementById('approval-pending');
+            const refreshButton = document.getElementById('refresh-button');
+            const refreshIcon = refreshButton.querySelector('svg');
+
+            // Show the content with a fade-in effect
+            setTimeout(() => {
+                approvalPending.classList.remove('opacity-0', '-translate-y-4');
+            }, 100);
+
+            refreshButton.addEventListener('click', function() {
+                refreshIcon.classList.add('animate-spin');
+                refreshButton.disabled = true;
+
+                // Simulate a page refresh after a short delay
+                setTimeout(() => {
+                    location.reload();
+                }, 1000);
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,221 @@
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap');
+
+  body {
+    font-family: 'Inter', sans-serif;
+    font-family: 'Lora', serif;
+  }
+
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-button {
+    width: 8px;
+    height: 5px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #eee;
+    border: none;
+    box-shadow: 0px 0px 3px #dfdfdf inset;
+    border-radius: 10px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #999;
+    border: none;
+    border-radius: 10px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #a3a3a3;
+  }
+
+
+
+  [data-quantity] {
+    position: relative;
+    width: 100%;
+    max-width: 11rem;
+    padding: 0;
+    margin: 0;
+    border: 0;
+  }
+
+  [data-quantity] legend {
+    display: none;
+  }
+
+  [data-quantity] input {
+    font-size: 18px;
+    height: 2rem;
+    border-radius: 2rem;
+    border: 0;
+    background: #fff;
+    color: #222;
+    box-shadow: 0 10px 65px -10px rgba(0, 0, 0, 0.25);
+    text-align: center;
+    width: 100%;
+    box-sizing: border-box;
+    font-weight: 500;
+  }
+
+  [data-quantity] input:focus {
+    outline: none;
+    box-shadow: 0 5px 55px -10px rgba(0, 0, 0, 0.2), 0 0 4px #3fb0ff;
+    /* Allows border radius on focus */
+  }
+
+  [data-quantity] input[type=number]::-webkit-inner-spin-button,
+  [data-quantity] input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  [data-quantity] input[type=number] {
+    -moz-appearance: textfield;
+  }
+
+  [data-quantity] button {
+    position: absolute;
+    width: 2rem;
+    height: 2rem;
+    top: 0rem;
+    display: block;
+    padding: 0;
+    margin: 0;
+    border: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    border-radius: 1.4rem;
+    cursor: pointer;
+    transition: opacity 0.15s;
+    opacity: 0.5;
+  }
+
+  [data-quantity] button:active {
+    background-position-y: 1px;
+    box-shadow: inset 0 2px 12px -4px #c5d1d9;
+  }
+
+  [data-quantity] button:focus {
+    outline: none;
+  }
+
+  [data-quantity] button:hover {
+    opacity: 1;
+  }
+
+  [data-quantity] button.sub {
+    left: 0.6rem;
+  }
+
+  [data-quantity] button.add {
+    right: 0.6rem;
+    background-position-x: -2.8rem;
+  }
+
+
+
+
+
+
+  .footerpos {
+    display: flex;
+    text-align: right;
+    align-items: right;
+    justify-content: flex-end;
+  }
+
+  .ticketprinter td,
+  .ticketprinter th,
+  .ticketprinter tr,
+  .ticketprinter table {
+    border-top: 1px solid black;
+    border-collapse: collapse;
+  }
+
+  .ticketprinter td.description,
+  .ticketprinter th.description {
+    width: 75px;
+    max-width: 75px;
+  }
+
+  .ticketprinter td.quantity,
+  .ticketprinter th.quantity {
+    width: 40px;
+    max-width: 40px;
+    word-break: break-all;
+  }
+
+  .ticketprinter td.price,
+  .ticketprinter th.price {
+    width: 40px;
+    max-width: 40px;
+    word-break: break-all;
+  }
+
+  .ticketprinter td.finalprice,
+  .ticketprinter th.finalprice {
+
+    font-weight: bold;
+  }
+
+
+  .centered {
+    font-size: 2rem;
+    text-align: center;
+    align-content: center;
+  }
+
+  .ticket {
+    width: 240px;
+    max-width: 240px;
+  }
+
+  .logoimg {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .ticketprinter td {
+    text-align: center;
+  }
+
+  .logoimg img {
+    height: 100px;
+    max-width: inherit;
+    width: inherit;
+  }
+
+  .ticketprinter {
+    font-size: 12px;
+    font-family: 'Times New Roman';
+
+  }
+
+
+  @media print {
+    body * {
+      visibility: hidden;
+    }
+
+    .ticketprinter,
+    .ticketprinter * {
+      visibility: visible;
+    }
+
+    .ticketprinter {
+      position: absolute;
+      left: 20px;
+      top: 10px;
+    }
+  }
+
+  #paperPage {
+    direction: rtl;
+    height: 6.6in;
+    width: 14in;
+  }

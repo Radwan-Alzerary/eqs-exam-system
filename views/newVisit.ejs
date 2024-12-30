@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link
+          rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/@tarekraafat/autocomplete.js@10.2.7/dist/css/autoComplete.02.min.css"
+        />
+        <script src="/js/jquery-3.6.3.min.js"></script>
+        <script src="/js/qrcode.min.js"></script>
+        <link href="/css/style.css" rel="stylesheet" />
+        <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    
+        <script src="/js/JsBarcode.all.min.js"></script>
+        <link href="/dist/output.css" rel="stylesheet" />
+        <script src="
+        https://cdn.jsdelivr.net/npm/barcode-generator@0.1.0/index.min.js
+        "></script>
+    
+        <link href="/css/all.min.css" rel="stylesheet" />
+      </head>
+    <body>
+    <form action="/visit/new/" method="POST" class="p-4">
+        <div class="w-full text-center text-2xl font-bold border-b-2 pb-4">
+          مرحبا بكم الى التسجيل في الدورات التطويرية لتعزيز القدرات 
+        </div>
+        <div class="mb-6">
+          <label
+            for="email"
+            class="block mb-2 text-base font-bold my-4 text-gray-900 text-center dark:text-white"
+            >الاسم</label
+          >
+          <input
+            type="text"
+            name="name"
+            id="email"
+            class="bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            placeholder="يرجى ادخال الاسم"
+            required
+          />
+        </div>
+        <div class="mb-6">
+          <label
+            for="email"
+            class="block mb-2 text-sm font-medium text-gray-900 text-center dark:text-white"
+            >المؤسسة</label
+          >
+  
+          <input
+            type="text"
+            id="email"
+            name="enterprise"
+            class="bg-gray-50 border border-gray-300 text-right text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            placeholder="يرجى ادخال اسم المؤسسة"
+            required
+          />
+        </div>
+        <div class="mb-6">
+          <label
+            for="email"
+            class="block mb-2 text-sm font-medium text-gray-900 text-center dark:text-white"
+            >العنوان الوظيفي</label
+          >
+          <input
+            type="text"
+            id="CareerTitle"
+            name="CareerTitle"
+            class="bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            placeholder="يرجى ادخال العنوان الوظيفي"
+            required
+          />  
+        </div>
+
+        <div class="mb-6">
+          <label
+            for="email"
+            class="block mb-2 text-sm font-medium text-gray-900 text-center dark:text-white"
+            >البريد الالكتروني</label
+          >
+          <input
+            type="email"
+            id="email"
+            name="email"
+            class="bg-gray-50 border border-gray-300 text-right text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            placeholder="يرجى ادخال بريد الكتروني صحيح"
+            required
+          />
+        </div>
+  
+        <button
+          type="submit"
+          class="text-white flex bg-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full text-center px-5 py-2.5 justify-center items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+        >
+          التسجيل
+        </button>
+      </form>
+  
+</body>
+</html>

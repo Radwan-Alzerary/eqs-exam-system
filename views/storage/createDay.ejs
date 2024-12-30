@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create a New Day</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/feather-icons"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+    <div class="container mx-auto px-4 py-8 max-w-md">
+        <h1 class="text-3xl font-bold text-center text-gray-800 mb-8">Create a New Day</h1>
+        <form id="createDayForm" action="/cloud/createDay" method="POST" class="bg-white shadow-md rounded-lg p-6">
+            <div class="mb-6">
+                <label for="newDayName" class="block text-sm font-medium text-gray-700 mb-2">Day Name (letters, digits, underscore, dash):</label>
+                <div class="mt-1 relative rounded-md shadow-sm">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i data-feather="calendar" class="h-5 w-5 text-gray-400"></i>
+                    </div>
+                    <input type="text" id="newDayName" name="newDayName" required
+                           class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                           placeholder="Enter day name">
+                </div>
+                <p id="nameError" class="mt-2 text-sm text-red-600 hidden"></p>
+            </div>
+
+            <div>
+                <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    Create Day
+                </button>
+            </div>
+        </form>
+        <div class="text-center mt-4">
+            <a href="/cloud" class="text-sm font-medium text-indigo-600 hover:text-indigo-500 flex items-center justify-center">
+                <i data-feather="arrow-left" class="h-4 w-4 mr-1"></i>
+                Back to Cloud Index
+            </a>
+        </div>
+    </div>
+
+    <script>
+        feather.replace();
+
+        const form = document.getElementById('createDayForm');
+        const nameInput = document.getElementById('newDayName');
+        const nameError = document.getElementById('nameError');
+
+        form.addEventListener('submit', function(e) {
+            if (!validateName(nameInput.value)) {
+                e.preventDefault();
+                nameError.textContent = 'Invalid day name. Use only letters, digits, underscore, and dash.';
+                nameError.classList.remove('hidden');
+                nameInput.classList.add('border-red-500');
+            } else {
+                nameError.classList.add('hidden');
+                nameInput.classList.remove('border-red-500');
+            }
+        });
+
+        nameInput.addEventListener('input', function() {
+            if (validateName(this.value)) {
+                nameError.classList.add('hidden');
+                this.classList.remove('border-red-500');
+            }
+        });
+
+        function validateName(name) {
+            const regex = /^[a-zA-Z0-9_-]+$/;
+            return regex.test(name);
+        }
+    </script>
+</body>
+</html>
