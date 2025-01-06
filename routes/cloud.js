@@ -15,7 +15,7 @@ const secureRoute = (req, res, next) => {
     }
     next();
   };
-  
+
 //-------------------------------------
 // Ensure "uploads" folder
 //-------------------------------------
@@ -29,30 +29,32 @@ if (!fs.existsSync(baseUploadPath)) {
 //-------------------------------------
 const storage = multer.diskStorage({
   destination: async (req, file, cb) => {
-    try {
-      const dayId = req.body.chosenDay;
-      if (!dayId) {
-        return cb(new Error("No day selected!"), "");
-      }
+      try {
+          const dayId = req.body.chosenDay;
+          if (!dayId) {
+              return cb(new Error("No day selected!"), "");
+          }
 
-      const theDay = await Day.findById(dayId);
-      if (!theDay) {
-        return cb(new Error("Day not found in DB!"), "");
-      }
+          const theDay = await Day.findById(dayId);
+          if (!theDay) {
+              return cb(new Error("Day not found in DB!"), "");
+          }
 
-      const dayFolderPath = path.join(baseUploadPath, theDay.name);
-      if (!fs.existsSync(dayFolderPath)) {
-        fs.mkdirSync(dayFolderPath, { recursive: true });
-      }
+          const dayFolderPath = path.join(baseUploadPath, theDay.name);
+          if (!fs.existsSync(dayFolderPath)) {
+              fs.mkdirSync(dayFolderPath, { recursive: true });
+          }
 
-      cb(null, dayFolderPath);
-    } catch (err) {
-      cb(err, "");
-    }
+          cb(null, dayFolderPath);
+      } catch (err) {
+          cb(err, "");
+      }
   },
   filename: (req, file, cb) => {
-    // Simply use the original file name instead of generating a new one
-    cb(null, file.originalname);
+      // Decode the file name properly
+      const decodedName = Buffer.from(file.originalname, 'latin1').toString('utf8');
+      console.log("Decoded File Name:", decodedName); // Debugging
+      cb(null, decodedName);
   }
 });
 
@@ -130,11 +132,11 @@ router.get("/upload",ensureAuthenticated, async (req, res) => {
 });
 
 // (C) POST /cloud/upload -> handle upload
-router.post("/upload",ensureAuthenticated, upload.single("myfile"), (req, res) => {
+router.post("/upload", ensureAuthenticated, upload.single("myfile"), (req, res) => {
+  console.log("Uploaded File Name:", req.file.originalname); // Log the name to see what is being received
   if (!req.file) {
     return res.status(400).send("No valid file or file type not allowed.");
   }
-  // success
   res.redirect("/cloud");
 });
 
@@ -243,7 +245,7 @@ router.post("/login", async (req, res) => {
 });
 
 // (F) GET /cloud/view/:dayName/:filename -> inline view (video, image, pdf)
-router.get("/view/:dayName/:filename",ensureAuthenticated, (req, res) => {
+router.get("/view/:dayName/:filename", (req, res) => {
   const { dayName, filename } = req.params;
   const filePath = path.join(baseUploadPath, dayName, filename);
 
@@ -254,13 +256,18 @@ router.get("/view/:dayName/:filename",ensureAuthenticated, (req, res) => {
   const ext = path.extname(filename).toLowerCase();
   const readStream = fs.createReadStream(filePath);
 
-  // Set content-type for inline view
+  // تعيين ترويسة Content-Disposition كـ inline
+  // لإخبار المتصفح (أو مدير التحميل) بمحاولة العرض داخل الصفحة.
+  // بالنسبة للاسم، يفضّل ترميزه لتفادي مشكلات المحارف الخاصة.
+  const contentDisposition = `inline; filename="${encodeURIComponent(filename)}"`;
+  res.setHeader("Content-Disposition", contentDisposition);
+
+  // تحديد Content-Type بناءً على الامتداد
   if (ext === ".pdf") {
     res.setHeader("Content-Type", "application/pdf");
   } else if (ext === ".mp4") {
     res.setHeader("Content-Type", "video/mp4");
   } else if ([".jpg", ".jpeg", ".png", ".gif"].includes(ext)) {
-    // basic image content
     if (ext === ".jpg" || ext === ".jpeg") {
       res.setHeader("Content-Type", "image/jpeg");
     } else if (ext === ".png") {
@@ -269,7 +276,8 @@ router.get("/view/:dayName/:filename",ensureAuthenticated, (req, res) => {
       res.setHeader("Content-Type", "image/gif");
     }
   } else {
-    // doc/docx or unknown => fallback
+    // كملفات doc/docx أو أي نوع آخر غير معروف
+    // يستطيع المتصفح أو إضافاته تقرير التصرف (فتح/تنزيل).
     res.setHeader("Content-Type", "application/octet-stream");
   }
 
@@ -285,6 +293,16 @@ router.post('/edit/:id', async (req, res) => {
   } catch (error) {
       res.status(500).send('Error updating day');
   }
+});
+
+
+router.get("/show/:dayName/:fileName", (req, res) => {
+  const { dayName, fileName } = req.params;
+  
+  // أي منطق للتحقق أو لإعداد البيانات
+  
+  // عرض صفحة "viewPage.ejs" وتمرير المتغيرات
+  res.render("cloud/viewPage", { dayName, fileName });
 });
 
 module.exports = router;
