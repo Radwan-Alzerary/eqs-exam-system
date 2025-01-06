@@ -59,6 +59,35 @@ router.post("/admin/unapprove/:id", ensureAuthenticated, async (req, res) => {
     res.status(500).json({ success: false, message: "Server Error" });
   }
 });
+
+
+// POST /admin/unapprove/:id - Unapprove a visitor
+router.post("/admin/empty/:id", ensureAuthenticated, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const visit = await Visit.findById(id);
+
+    if (!visit) {
+      return res.status(404).json({ success: false, message: "Visit not found" });
+    }
+    visit.name = ""
+    visit.nickname = ""
+    visit.registered = false
+    visit.approved = false
+    visit.password = ""
+    visit.email = ""
+    visit.enterprise =""
+    await visit.save();
+
+    res.json({ success: true, message: "Visitor empty successfully" });
+  } catch (error) {
+    console.error("Error in POST /admin/empty/:id:", error);
+    res.status(500).json({ success: false, message: "Server Error" });
+  }
+});
+
+
+
 router.get("/visitor", async (req, res) => {
   const visits = await Visit.find({registered:true,coming:true}).sort({ enterprise: 1 });
   res.render("visitorList",{visits} );

@@ -41,6 +41,11 @@
                                         <i data-feather="check" class="ml-2 h-4 w-4"></i>
                                         موافقة
                                     </button>
+                                    <button onclick="emptyVisitor('<%= visit._id %>')" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                                        <i data-feather="check" class="ml-2 h-4 w-4"></i>
+                                        تصفير
+                                    </button>
+
                                     <% if (visit.enterprise) { %>
                                       <div class="text-center">
                                           <span class="font-bold text-lg text-indigo-600"><%= visit.enterprise %></span>
@@ -225,6 +230,31 @@ document.getElementById('change-password-form').addEventListener('submit', (e) =
                     alert('حدث خطأ. يرجى المحاولة مرة أخرى.');
                 });
         }
+
+
+        function emptyVisitor(visitorId) {
+            fetch(`/admin/empty/${visitorId}/`, { method: 'POST' })
+                .then(response => {
+                    if (response.ok) {
+                        const visitorElement = document.getElementById(`visit-${visitorId}`);
+                        visitorElement.classList.add('bg-green-100');
+                        setTimeout(() => {
+                            visitorElement.remove();
+                            if (document.querySelectorAll('#unapproved-visits li').length === 0) {
+                                location.reload();
+                            }
+                        }, 500);
+                    } else {
+                        alert('فشلت الموافقة على الزائر. يرجى المحاولة مرة أخرى.');
+                    }
+                })
+                .catch(error => {
+                    console.error('خطأ:', error);
+                    alert('حدث خطأ. يرجى المحاولة مرة أخرى.');
+                });
+        }
+
+
 
         function unapproveVisitor(visitorId) {
             fetch(`/admin/unapprove/${visitorId}`, { method: 'POST' })

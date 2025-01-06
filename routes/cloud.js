@@ -280,4 +280,15 @@ router.get("/view/:dayName/:filename",ensureAuthenticated, (req, res) => {
   readStream.pipe(res);
 });
 
+router.post('/edit/:id', async (req, res) => {
+  const { id } = req.params;
+  const { name } = req.body;
+  try {
+      await Day.findByIdAndUpdate(id, { name });
+      res.status(200).send('Updated successfully');
+  } catch (error) {
+      res.status(500).send('Error updating day');
+  }
+});
+
 module.exports = router;

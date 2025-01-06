@@ -72,6 +72,14 @@
                                 <strong class="text-lg text-gray-800 ml-3"><%= day.name %></strong>
                                 <i data-feather="folder" class="text-yellow-500"></i>
                             </div>
+                            <div class="flex space-x-2 space-x-reverse">
+                                <button onclick="editDay('<%= day._id %>', '<%= day.name %>')" class="bg-yellow-500 hover:bg-yellow-600 text-white text-sm font-medium px-3 py-1 rounded transition duration-300">
+                                    تعديل
+                                </button>
+                                <button onclick="removeDay('<%= day._id %>')" class="bg-red-500 hover:bg-red-600 text-white text-sm font-medium px-3 py-1 rounded transition duration-300">
+                                    حذف
+                                </button>
+                            </div>
                         </li>
                     <% }) %>
                 </ul>
@@ -95,6 +103,45 @@
                     console.error('خطأ:', error);
                     alert('حدث خطأ. يرجى المحاولة مرة أخرى.');
                 });
+        }
+
+        function editDay(dayId, dayName) {
+            const newName = prompt('أدخل اسم اليوم الجديد:', dayName);
+            if (newName && newName !== dayName) {
+                fetch(`/cloud/edit/${dayId}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name: newName })
+                })
+                .then(response => {
+                    if (response.ok) {
+                        window.location.reload();
+                    } else {
+                        alert('فشل في تعديل اليوم. يرجى المحاولة مرة أخرى.');
+                    }
+                })
+                .catch(error => {
+                    console.error('خطأ:', error);
+                    alert('حدث خطأ. يرجى المحاولة مرة أخرى.');
+                });
+            }
+        }
+
+        function removeDay(dayId) {
+            if (confirm('هل أنت متأكد أنك تريد حذف هذا اليوم؟')) {
+                fetch(`/cloud/delete/${dayId}`, { method: 'DELETE' })
+                .then(response => {
+                    if (response.ok) {
+                        window.location.reload();
+                    } else {
+                        alert('فشل في حذف اليوم. يرجى المحاولة مرة أخرى.');
+                    }
+                })
+                .catch(error => {
+                    console.error('خطأ:', error);
+                    alert('حدث خطأ. يرجى المحاولة مرة أخرى.');
+                });
+            }
         }
     </script>
 </body>
