@@ -30,19 +30,16 @@ if (!fs.existsSync(baseUploadPath)) {
 const storage = multer.diskStorage({
   destination: async (req, file, cb) => {
     try {
-      // The user picks day from <select name="chosenDay">
       const dayId = req.body.chosenDay;
       if (!dayId) {
         return cb(new Error("No day selected!"), "");
       }
 
-      // Fetch from DB
       const theDay = await Day.findById(dayId);
       if (!theDay) {
         return cb(new Error("Day not found in DB!"), "");
       }
 
-      // Create folder if needed
       const dayFolderPath = path.join(baseUploadPath, theDay.name);
       if (!fs.existsSync(dayFolderPath)) {
         fs.mkdirSync(dayFolderPath, { recursive: true });
@@ -54,9 +51,8 @@ const storage = multer.diskStorage({
     }
   },
   filename: (req, file, cb) => {
-    const ext = path.extname(file.originalname);
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(null, file.fieldname + "-" + uniqueSuffix + ext);
+    // Simply use the original file name instead of generating a new one
+    cb(null, file.originalname);
   }
 });
 
