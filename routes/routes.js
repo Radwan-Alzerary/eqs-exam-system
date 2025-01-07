@@ -11,7 +11,7 @@ router.get("/", ensureAuthenticated, async (req, res) => {
 router.get("/qr", async (req, res) => {
   res.render("qr-reder" );
 });
-router.get("/qr/check", async (req, res) => {
+router.post("/qr/check", async (req, res) => {
   const url = req.body.qrData
 
   const parts = url.split('/');
