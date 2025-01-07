@@ -20,10 +20,6 @@ router.post("/qr/check", async (req, res) => {
     console.log("Extracted ID:", lastPart);
 
     // Validate the last part as a MongoDB ObjectId
-    const mongoose = require('mongoose');
-    if (!mongoose.Types.ObjectId.isValid(lastPart)) {
-      return res.status(400).json({ error: "Invalid ID format" });
-    }
 
     // Check if the visit exists
     const visitExists = await Visit.findById(lastPart);
