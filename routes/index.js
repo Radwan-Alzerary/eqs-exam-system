@@ -10,6 +10,10 @@ const fs = require("fs");
 router.use("/admin", require("./users"));
 router.use("/visit", require("./visit"));
 router.use("/", require("./routes"));
+const baseUploadPath = path.join(__dirname, "..", "..", "uploads");
+if (!fs.existsSync(baseUploadPath)) {
+  fs.mkdirSync(baseUploadPath);
+}
 
 router.get("/new", async (req, res) => {
   const newVisit = new Visit();
