@@ -19,6 +19,7 @@ const VisitSchema = new mongoose.Schema({
   coming: { type: Boolean, default: false },
   comingDate: { type: Date },
   note: { type: String },
+  Logins:[{type:String}]
 });
 
 const Visit = mongoose.model("Visit", VisitSchema);

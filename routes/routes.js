@@ -16,9 +16,14 @@ router.post("/qr/check", async (req, res) => {
 
   const parts = url.split('/');
   const lastPart = parts[parts.length - 1]; // Extracts the last segment
-  console.log(lastPart)
-  const visiter = await Visit.findById(lastPart)
-  res.json(visiter)
+      // Find the visit by ID and push the current date into the Logins array
+      const visit = await Visit.findByIdAndUpdate(
+        lastPart,
+        { $push: { Logins: Date.now() } },
+        { new: true } // Return the updated document
+      );
+  
+  res.json(visit)
 });
 
 // GET /admin/approve -> Show unapproved visitors
