@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-  <title>Advanced QR Code Scanner</title>
+  <title>QR Code-Only Scanner</title>
   <style>
     body {
       display: flex;
@@ -56,7 +56,7 @@
   </style>
 </head>
 <body>
-  <h1>Advanced QR Code Scanner</h1>
+  <h1>تسجيل الحضور</h1>
   
   <div>
     <button id="toggle-camera-btn" class="btn">Switch Camera</button>
@@ -67,7 +67,7 @@
   <div id="output">Initializing camera...</div>
   <div id="error"></div>
 
-  <!-- jsQR library -->
+  <!-- jsQR library (specialized for QR codes) -->
   <script src="https://cdn.jsdelivr.net/npm/jsqr"></script>
 
   <script>
@@ -136,7 +136,7 @@
       error.textContent = 'Unable to access the camera: ' + err.message;
     }
 
-    // (1) Automatic scanning loop
+    // (1) Automatic scanning loop (QR code only)
     video.addEventListener('play', () => {
       if (!scanning) {
         scanning = true;
@@ -154,25 +154,26 @@
           canvas.height = video.videoHeight;
           context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
+          // Decode QR only
           const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
           const code = jsQR(imageData.data, canvas.width, canvas.height);
 
-          if (code && code.data) {
-            if (code.data !== lastScannedCode) {
-              lastScannedCode = code.data;
-              output.textContent = `QR Code Detected: ${code.data}`;
-              postToServer(code.data);
-            }
-          } else {
+          // If a valid QR code is detected and it's new
+          if (code && code.data && code.data !== lastScannedCode) {
+            lastScannedCode = code.data;
+            output.textContent = `QR Code Detected: ${code.data}`;
+            postToServer(code.data);
+          } else if (!code) {
             output.textContent = 'Scanning...';
           }
         }
+        // Throttle scanning to reduce CPU usage and repeated scanning
         setTimeout(scan, 500);
       };
       scan();
     }
 
-    // (2) Manual Check (captures one frame on button click and tries to decode)
+    // (2) Manual Check (captures one frame and tries to decode as QR)
     manualCheckBtn.addEventListener('click', () => {
       if (video.readyState !== video.HAVE_ENOUGH_DATA) {
         output.textContent = 'Camera not ready yet!';
@@ -187,7 +188,7 @@
       // Draw the current frame from the video
       context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-      // Decode
+      // Decode QR code
       const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
       const code = jsQR(imageData.data, canvas.width, canvas.height);
 
@@ -199,7 +200,7 @@
       }
     });
 
-    // (3) Helper to POST data to server
+    // (3) Helper function to POST data to server
     function postToServer(qrData) {
       fetch('/qr/check', {
         method: 'POST',
@@ -219,7 +220,7 @@
         });
     }
 
-    // Start with environment camera by default
+    // Start scanning with environment camera by default
     startCamera('environment');
   </script>
 </body>
