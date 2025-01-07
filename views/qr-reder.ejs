@@ -38,7 +38,9 @@
       margin-top: 10px;
       text-align: center;
     }
-    #toggle-camera-btn {
+    /* Button styling */
+    .btn {
+      display: inline-block;
       padding: 10px 20px;
       border: none;
       border-radius: 8px;
@@ -46,16 +48,21 @@
       color: #fff;
       font-size: 16px;
       cursor: pointer;
-      margin-bottom: 15px;
+      margin: 5px;
     }
-    #toggle-camera-btn:hover {
+    .btn:hover {
       background-color: #0d8289;
     }
   </style>
 </head>
 <body>
   <h1>Advanced QR Code Scanner</h1>
-  <button id="toggle-camera-btn">Switch Camera</button>
+  
+  <div>
+    <button id="toggle-camera-btn" class="btn">Switch Camera</button>
+    <button id="manual-check-btn" class="btn">Manual Check</button>
+  </div>
+  
   <video id="video" autoplay></video>
   <div id="output">Initializing camera...</div>
   <div id="error"></div>
@@ -68,11 +75,12 @@
     const output = document.getElementById('output');
     const error = document.getElementById('error');
     const toggleCameraBtn = document.getElementById('toggle-camera-btn');
+    const manualCheckBtn = document.getElementById('manual-check-btn');
 
     // Track camera usage
     let useEnvironmentCamera = true;
     let currentStream = null;
-    let lastScannedCode = null; // to avoid repeating POST requests
+    let lastScannedCode = null; // to avoid repeating POST requests in auto-scan
     let scanning = false;       // helps avoid multiple scanning loops at once
 
     // Helper: stop existing stream
@@ -115,7 +123,7 @@
       }
     }
 
-    // Toggle camera button event
+    // Camera toggle button
     toggleCameraBtn.addEventListener('click', () => {
       useEnvironmentCamera = !useEnvironmentCamera;
       const mode = useEnvironmentCamera ? 'environment' : 'user';
@@ -128,16 +136,15 @@
       error.textContent = 'Unable to access the camera: ' + err.message;
     }
 
-    // Core scanning logic
+    // (1) Automatic scanning loop
     video.addEventListener('play', () => {
       if (!scanning) {
         scanning = true;
-        scanQRCode();
+        scanQRCodeLoop();
       }
     });
 
-    // Interval-based scanning
-    function scanQRCode() {
+    function scanQRCodeLoop() {
       const canvas = document.createElement('canvas');
       const context = canvas.getContext('2d');
 
@@ -151,39 +158,65 @@
           const code = jsQR(imageData.data, canvas.width, canvas.height);
 
           if (code && code.data) {
-            // If a new code is detected
             if (code.data !== lastScannedCode) {
               lastScannedCode = code.data;
               output.textContent = `QR Code Detected: ${code.data}`;
-
-              // Send POST request with QR code data
-              fetch('/qr/check', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ qrData: code.data })
-              })
-                .then(response => response.json())
-                .then(data => {
-                  // You can customize what to do with the server response here
-                  console.log('Server response:', data);
-                  // For example, display response in output:
-                  // output.textContent = `Server response: ${JSON.stringify(data)}`;
-                })
-                .catch(err => {
-                  console.error('Error posting QR data:', err);
-                });
+              postToServer(code.data);
             }
           } else {
             output.textContent = 'Scanning...';
           }
         }
-        // Scan again after a short delay to prevent too frequent scanning
         setTimeout(scan, 500);
       };
-
       scan();
+    }
+
+    // (2) Manual Check (captures one frame on button click and tries to decode)
+    manualCheckBtn.addEventListener('click', () => {
+      if (video.readyState !== video.HAVE_ENOUGH_DATA) {
+        output.textContent = 'Camera not ready yet!';
+        return;
+      }
+
+      const canvas = document.createElement('canvas');
+      const context = canvas.getContext('2d');
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+
+      // Draw the current frame from the video
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+      // Decode
+      const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+      const code = jsQR(imageData.data, canvas.width, canvas.height);
+
+      if (code && code.data) {
+        output.textContent = `Manual QR Code: ${code.data}`;
+        postToServer(code.data);
+      } else {
+        output.textContent = 'No QR code found in the captured image.';
+      }
+    });
+
+    // (3) Helper to POST data to server
+    function postToServer(qrData) {
+      fetch('/qr/check', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ qrData })
+      })
+        .then(response => response.json())
+        .then(data => {
+          console.log('Server response:', data);
+          // Optionally display server response in the UI:
+          // output.textContent = `Server response: ${JSON.stringify(data)}`;
+        })
+        .catch(err => {
+          console.error('Error posting QR data:', err);
+        });
     }
 
     // Start with environment camera by default
