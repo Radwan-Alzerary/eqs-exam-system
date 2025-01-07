@@ -11,6 +11,15 @@ router.get("/", ensureAuthenticated, async (req, res) => {
 router.get("/qr", async (req, res) => {
   res.render("qr-reder" );
 });
+router.get("/qr/check", async (req, res) => {
+  const url = req.body.qrData
+
+  const parts = url.split('/');
+  const lastPart = parts[parts.length - 1]; // Extracts the last segment
+console.log(lastPart)
+  const visiter = await Visit.findById(lastPart)
+  res.json(visiter)
+});
 
 // GET /admin/approve -> Show unapproved visitors
 router.get("/admin/approve", ensureAuthenticated, async (req, res) => {
