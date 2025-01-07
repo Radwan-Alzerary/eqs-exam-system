@@ -20,7 +20,7 @@ router.post("/qr/check", async (req, res) => {
     console.log("Extracted ID:", lastPart);
 
     // Validate the last part as a MongoDB ObjectId
-    const checkvisit = Visit.findOne({_id:lastPart})
+    const checkvisit =await Visit.findOne({_id:lastPart})
     console.log(checkvisit)
     // Check if the visit exists
     const visitExists = await Visit.findById(lastPart);
