@@ -12,18 +12,38 @@ router.get("/qr", async (req, res) => {
   res.render("qr-reder" );
 });
 router.post("/qr/check", async (req, res) => {
-  const url = req.body.qrData
+  try {
+    const url = req.body.qrData;
+    const parts = url.split('/');
+    const lastPart = parts[parts.length - 1]; // Extract the last segment
 
-  const parts = url.split('/');
-  const lastPart = parts[parts.length - 1]; // Extracts the last segment
-      // Find the visit by ID and push the current date into the Logins array
-      const visit = await Visit.findByIdAndUpdate(
-        lastPart,
-        { $push: { Logins: Date.now() } },
-        { new: true } // Return the updated document
-      );
-  console.log(visit)
-  res.json(visit)
+    console.log("Extracted ID:", lastPart);
+
+    // Validate the last part as a MongoDB ObjectId
+    const mongoose = require('mongoose');
+    if (!mongoose.Types.ObjectId.isValid(lastPart)) {
+      return res.status(400).json({ error: "Invalid ID format" });
+    }
+
+    // Check if the visit exists
+    const visitExists = await Visit.findById(lastPart);
+    if (!visitExists) {
+      return res.status(404).json({ error: "Visit not found" });
+    }
+
+    // Update the document
+    const visit = await Visit.findByIdAndUpdate(
+      lastPart,
+      { $push: { Logins: Date.now() } },
+      { new: true } // Return the updated document
+    );
+
+    console.log("Updated Visit:", visit);
+    res.json(visit);
+  } catch (error) {
+    console.error("Error in /qr/check:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
 });
 
 // GET /admin/approve -> Show unapproved visitors
