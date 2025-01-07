@@ -20,7 +20,8 @@ router.post("/qr/check", async (req, res) => {
     console.log("Extracted ID:", lastPart);
 
     // Validate the last part as a MongoDB ObjectId
-
+    const checkvisit = Visit.findOne({_id:lastPart})
+    console.log(checkvisit)
     // Check if the visit exists
     const visitExists = await Visit.findById(lastPart);
     if (!visitExists) {
@@ -28,7 +29,7 @@ router.post("/qr/check", async (req, res) => {
     }
 
     // Update the document
-    const visit = await Visit.findByIdAndUpdate(
+    const visit = await Visit.findOneAndUpdate(
       lastPart,
       { $push: { Logins: Date.now() } },
       { new: true } // Return the updated document

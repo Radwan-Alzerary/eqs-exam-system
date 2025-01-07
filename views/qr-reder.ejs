@@ -205,18 +205,18 @@
       fetch('/qr/check', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ qrData }),
+        body: JSON.stringify({ qrData })
       })
-        .then((response) => response.json())
-        .then((data) => {
+        .then(response => response.json())
+        .then(data => {
           console.log('Server response:', data);
-          output.textContent = `Server Response: ${JSON.stringify(data)}`;
+          // Optionally display server response in the UI:
+          // output.textContent = `Server response: ${JSON.stringify(data)}`;
         })
-        .catch((err) => {
+        .catch(err => {
           console.error('Error posting QR data:', err);
-          output.textContent = 'Error: Unable to send QR data to the server.';
         });
     }
 
