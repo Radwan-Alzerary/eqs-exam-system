@@ -22,7 +22,7 @@ router.post("/qr/check", async (req, res) => {
         { $push: { Logins: Date.now() } },
         { new: true } // Return the updated document
       );
-  
+  console.log(visit)
   res.json(visit)
 });
 
