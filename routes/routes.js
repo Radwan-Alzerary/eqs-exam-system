@@ -8,6 +8,10 @@ const Visit = require("../models/visiter");
 router.get("/", ensureAuthenticated, async (req, res) => {
   res.render("dashboard" );
 });
+router.get("/qr", async (req, res) => {
+  res.render("qr-reder" );
+});
+
 // GET /admin/approve -> Show unapproved visitors
 router.get("/admin/approve", ensureAuthenticated, async (req, res) => {
   try {
