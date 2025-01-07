@@ -8,6 +8,7 @@ const bcrypt = require("bcrypt");
 const ensureAuthenticated = require("../config/auth").userlogin;
 
 const Day = require("../models/Day"); // Mongoose model
+const DayModel = require("../models/Day"); // Mongoose model
 const Visit = require("../models/visiter");
 const secureRoute = (req, res, next) => {
     if (!req.session.user) {
@@ -165,7 +166,7 @@ router.post("/setDefault/:id", async (req, res) => {
 router.get("/default", async (req, res) => {
   try {
     // find the default day
-    const defaultDay = await Day.findOne({ isDefault: true });
+    const defaultDay = await DayModel.findOne({ isDefault: true });
     if (!defaultDay) {
       return res.status(404).send("No default day found");
     }
