@@ -2,8 +2,10 @@ const router = require("express").Router();
 const isfulladmin = require("../config/auth").isfulladmin;
 const isCashire = require("../config/auth").isCashire;
 const ensureAuthenticated = require("../config/auth").userlogin;
+const path = require("path");
 const Day = require("../models/Day");
 const Visit = require("../models/visiter");
+const fs = require("fs");
 
 router.use("/admin", require("./users"));
 router.use("/visit", require("./visit"));
