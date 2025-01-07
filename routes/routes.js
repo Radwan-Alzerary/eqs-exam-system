@@ -16,7 +16,7 @@ router.get("/qr/check", async (req, res) => {
 
   const parts = url.split('/');
   const lastPart = parts[parts.length - 1]; // Extracts the last segment
-console.log(lastPart)
+  console.log(lastPart)
   const visiter = await Visit.findById(lastPart)
   res.json(visiter)
 });
