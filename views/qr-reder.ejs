@@ -216,7 +216,7 @@
           console.log('Server response:', data);
           
           // Optionally display server response in the UI:
-          responseOutput.textContent = `${(JSON.stringify(data)).name}`;
+          responseOutput.textContent = `${data.name}`;
         })
         .catch(err => {
           console.error('Error posting QR data:', err);
