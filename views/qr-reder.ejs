@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>QR Code Scanner</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>Advanced QR Code Scanner</title>
   <style>
     body {
       display: flex;
@@ -30,42 +30,118 @@
       color: #12A9B0;
       font-size: 18px;
       font-weight: bold;
+      text-align: center;
     }
     #error {
       color: #E3747A;
       font-size: 16px;
       margin-top: 10px;
+      text-align: center;
+    }
+    #toggle-camera-btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      background-color: #12A9B0;
+      color: #fff;
+      font-size: 16px;
+      cursor: pointer;
+      margin-bottom: 15px;
+    }
+    #toggle-camera-btn:hover {
+      background-color: #0d8289;
     }
   </style>
 </head>
 <body>
-  <h1>QR Code Scanner</h1>
+  <h1>Advanced QR Code Scanner</h1>
+  <button id="toggle-camera-btn">Switch Camera</button>
   <video id="video" autoplay></video>
-  <div id="output">Scanning...</div>
+  <div id="output">Initializing camera...</div>
   <div id="error"></div>
+
+  <!-- jsQR library -->
   <script src="https://cdn.jsdelivr.net/npm/jsqr"></script>
+
   <script>
-    // Select video and output elements
     const video = document.getElementById('video');
     const output = document.getElementById('output');
     const error = document.getElementById('error');
+    const toggleCameraBtn = document.getElementById('toggle-camera-btn');
 
-    // Access the camera
-    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
-      .then(stream => {
+    // Track camera usage
+    let useEnvironmentCamera = true;
+    let currentStream = null;
+    let lastScannedCode = null; // to avoid repeating POST requests
+    let scanning = false;       // helps avoid multiple scanning loops at once
+
+    // Helper: stop existing stream
+    function stopStream() {
+      if (currentStream) {
+        currentStream.getTracks().forEach(track => track.stop());
+      }
+    }
+
+    // Request camera access with specified facingMode
+    async function startCamera(facingMode = 'environment') {
+      stopStream();
+      output.textContent = 'Initializing camera...';
+      error.textContent = '';
+
+      try {
+        const constraints = {
+          video: {
+            facingMode: { exact: facingMode }
+          }
+        };
+        const stream = await navigator.mediaDevices.getUserMedia(constraints);
+        currentStream = stream;
         video.srcObject = stream;
-      })
-      .catch(err => {
-        console.error('Error accessing the camera: ', err);
-        error.textContent = 'Unable to access the camera. Please ensure it is allowed.';
-      });
+        output.textContent = 'Camera initialized. Scanning...';
+      } catch (err) {
+        // If exact constraint fails (e.g., user has no environment camera), fallback
+        if (facingMode === 'environment' && err.name === 'OverconstrainedError') {
+          try {
+            const fallbackStream = await navigator.mediaDevices.getUserMedia({ video: true });
+            currentStream = fallbackStream;
+            video.srcObject = fallbackStream;
+            output.textContent = 'Camera initialized (fallback). Scanning...';
+          } catch (fallbackErr) {
+            showError(fallbackErr);
+          }
+        } else {
+          showError(err);
+        }
+      }
+    }
 
-    // Decode QR code from video feed
+    // Toggle camera button event
+    toggleCameraBtn.addEventListener('click', () => {
+      useEnvironmentCamera = !useEnvironmentCamera;
+      const mode = useEnvironmentCamera ? 'environment' : 'user';
+      startCamera(mode);
+    });
+
+    // General error display
+    function showError(err) {
+      console.error('Camera Error: ', err);
+      error.textContent = 'Unable to access the camera: ' + err.message;
+    }
+
+    // Core scanning logic
     video.addEventListener('play', () => {
+      if (!scanning) {
+        scanning = true;
+        scanQRCode();
+      }
+    });
+
+    // Interval-based scanning
+    function scanQRCode() {
       const canvas = document.createElement('canvas');
       const context = canvas.getContext('2d');
 
-      const scanQRCode = () => {
+      const scan = () => {
         if (video.readyState === video.HAVE_ENOUGH_DATA) {
           canvas.width = video.videoWidth;
           canvas.height = video.videoHeight;
@@ -74,17 +150,44 @@
           const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
           const code = jsQR(imageData.data, canvas.width, canvas.height);
 
-          if (code) {
-            output.textContent = `QR Code: ${code.data}`;
+          if (code && code.data) {
+            // If a new code is detected
+            if (code.data !== lastScannedCode) {
+              lastScannedCode = code.data;
+              output.textContent = `QR Code Detected: ${code.data}`;
+
+              // Send POST request with QR code data
+              fetch('/qr/check', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ qrData: code.data })
+              })
+                .then(response => response.json())
+                .then(data => {
+                  // You can customize what to do with the server response here
+                  console.log('Server response:', data);
+                  // For example, display response in output:
+                  // output.textContent = `Server response: ${JSON.stringify(data)}`;
+                })
+                .catch(err => {
+                  console.error('Error posting QR data:', err);
+                });
+            }
           } else {
             output.textContent = 'Scanning...';
           }
         }
-        requestAnimationFrame(scanQRCode);
+        // Scan again after a short delay to prevent too frequent scanning
+        setTimeout(scan, 500);
       };
 
-      scanQRCode();
-    });
+      scan();
+    }
+
+    // Start with environment camera by default
+    startCamera('environment');
   </script>
 </body>
 </html>
