@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit QR</title>
+</head>
+<body>
+  <h1>Edit QR</h1>
+  <form action="/dailyqr/edit/<%= qrRecord._id %>" method="POST">
+    <label for="QrValue">QR Value:</label>
+    <input type="text" name="QrValue" value="<%= qrRecord.QrValue %>" required>
+    <br>
+    <label for="startTime">Start Time:</label>
+    <input type="datetime-local" name="startTime" value="<%= new Date(qrRecord.startTime).toISOString().slice(0,16) %>">
+    <br>
+    <label for="endTime">End Time:</label>
+    <input type="datetime-local" name="endTime" value="<%= new Date(qrRecord.endTime).toISOString().slice(0,16) %>">
+    <br>
+    <label for="active">Active:</label>
+    <input type="checkbox" name="active" value="true" <%= qrRecord.active ? 'checked' : '' %>>
+    <br>
+    <button type="submit">Update</button>
+  </form>
+</body>
+</html>

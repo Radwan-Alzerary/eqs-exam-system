@@ -8,6 +8,7 @@ const Visit = require("../models/visiter");
 const fs = require("fs");
 
 router.use("/admin", require("./users"));
+router.use("/DailyQr", require("./dailyqr"));
 router.use("/visit", require("./visit"));
 router.use("/", require("./routes"));
 const baseUploadPath = path.join(__dirname, "..", "..", "uploads");

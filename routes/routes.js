@@ -4,12 +4,13 @@ const isfulladmin = require("../config/auth").isfulladmin;
 const isCashire = require("../config/auth").isCashire;
 const ensureAuthenticated = require("../config/auth").userlogin;
 const Visit = require("../models/visiter");
+const DailyQr = require("../models/dailyQr");
 
 router.get("/", ensureAuthenticated, async (req, res) => {
-  res.render("dashboard" );
+  res.render("dashboard");
 });
 router.get("/qr", async (req, res) => {
-  res.render("qr-reder" );
+  res.render("qr-reder");
 });
 router.post("/qr/check", async (req, res) => {
   try {
@@ -42,11 +43,61 @@ router.post("/qr/check", async (req, res) => {
   }
 });
 
+router.post("/qr/usercheck", async (req, res) => {
+  try {
+    const url = req.body.qrData;
+    const user = req.session.user;
+    console.log(url);
+    console.log(user);
+
+    const qrDays = await DailyQr.findById(url);
+
+    // Get the current time and adjust to Baghdad timezone (UTC+3)
+    const currentTime = new Date();
+    const baghdadTime = new Date(currentTime.getTime() + 3 * 60 * 60 * 1000); // Add 3 hours
+    if (qrDays.startTime && qrDays.endTime) {
+      const isValid = currentTime >= qrDays.startTime && currentTime <= qrDays.endTime;
+
+      if (isValid) {
+        // Update the document
+        const visit = await Visit.findByIdAndUpdate(
+          user.id,
+          { $push: { Logins: Date.now() } },
+          { new: true } // Return the updated document
+        );
+
+
+        return res.json(visit);
+      } else {
+        return res.json({ message: "The current time is outside the valid range.", isValid });
+      }
+    } else {
+      return res.json({ message: "Start time or end time is not defined.", isValid: false });
+    }
+
+    // Additional validation and updates can be added here
+    res.json("visit");
+  } catch (error) {
+    console.error("Error in /qr/usercheck:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+
 // GET /admin/approve -> Show unapproved visitors
 router.get("/admin/approve", ensureAuthenticated, async (req, res) => {
   try {
-    const unapprovedVisits = await Visit.find({ approved: false });
-    const approvedVisits = await Visit.find({ approved: true });
+    const unapprovedVisits = await Visit.aggregate([
+      { $match: { approved: false } },
+      { $addFields: { numberAsInt: { $toInt: "$number" } } },
+      { $sort: { numberAsInt: 1 } } // Sort in ascending order
+    ]);
+
+    const approvedVisits = await Visit.aggregate([
+      { $match: { approved: true } },
+      { $addFields: { numberAsInt: { $toInt: "$number" } } },
+      { $sort: { numberAsInt: 1 } } // Sort in ascending order
+    ]);
     res.render("admin/approve", { unapprovedVisits, approvedVisits });
   } catch (error) {
     console.error("Error in GET /admin/approve:", error);
@@ -110,7 +161,7 @@ router.post("/admin/empty/:id", ensureAuthenticated, async (req, res) => {
     visit.approved = false
     visit.password = ""
     visit.email = ""
-    visit.enterprise =""
+    visit.enterprise = ""
     await visit.save();
 
     res.json({ success: true, message: "Visitor empty successfully" });
@@ -123,8 +174,8 @@ router.post("/admin/empty/:id", ensureAuthenticated, async (req, res) => {
 
 
 router.get("/visitor", async (req, res) => {
-  const visits = await Visit.find({registered:true,coming:true}).sort({ enterprise: 1 });
-  res.render("visitorList",{visits} );
+  const visits = await Visit.find({ registered: true, coming: true }).sort({ enterprise: 1 });
+  res.render("visitorList", { visits });
 });
 const cloudRouter = require("./cloud");
 router.use("/cloud", cloudRouter);

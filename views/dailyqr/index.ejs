@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Daily QR Records</title>
+  <script>
+    // Function to print a specific QR code on full A4 paper
+    function printQrCode(qrId) {
+      const qrElement = document.getElementById(qrId);
+      const printWindow = window.open("", "_blank");
+      printWindow.document.write(`
+        <html>
+          <head>
+            <title>Print QR Code</title>
+            <style>
+              body {
+                margin: 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                height: 100vh;
+              }
+              img {
+                max-width: 100%;
+                max-height: 100%;
+              }
+              .qr-container {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                width: 100%;
+                height: 100%;
+              }
+              .qr-value {
+                font-size: 24px;
+                margin-top: 20px;
+              }
+            </style>
+          </head>
+          <body>
+            <div class="qr-container">
+              ${qrElement.innerHTML}
+            </div>
+          </body>
+        </html>
+      `);
+      printWindow.document.close();
+      printWindow.focus();
+      printWindow.print();
+    //   printWindow.close();
+    }
+  </script>
+</head>
+<body>
+  <h1>Daily QR Records</h1>
+  <a href="/dailyqr/new">Add New QR</a>
+  <table border="1">
+    <thead>
+      <tr>
+        <th>QR Value</th>
+        <th>Start Time</th>
+        <th>End Time</th>
+        <th>Active</th>
+        <th>QR Code</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% qrList.forEach(qr => { %>
+        <tr>
+          <td><%= qr.QrValue %></td>
+          <td><%= qr.startTime %></td>
+          <td><%= qr.endTime %></td>
+          <td><%= qr.active ? 'Yes' : 'No' %></td>
+          <td>
+            <% if (qr.qrCodeData) { %>
+              <div id="qr-<%= qr._id %>">
+                <img src="<%= qr.qrCodeData %>" alt="QR Code">
+                <p class="qr-value"><%= qr.QrValue %></p>
+              </div>
+            <% } else { %>
+              No QR Code
+            <% } %>
+          </td>
+          <td>
+            <a href="/dailyqr/edit/<%= qr._id %>">Edit</a>
+            <a href="/dailyqr/delete/<%= qr._id %>" onclick="return confirm('Are you sure?')">Delete</a>
+            <% if (qr.qrCodeData) { %>
+              <button onclick="printQrCode('qr-<%= qr._id %>')">Print QR</button>
+            <% } %>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</body>
+</html>

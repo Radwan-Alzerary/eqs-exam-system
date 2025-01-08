@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>New QR</title>
+</head>
+<body>
+  <h1>Add New QR</h1>
+  <form action="/dailyqr" method="POST">
+    <label for="QrValue">QR Value:</label>
+    <input type="text" name="QrValue" required>
+    <br>
+    <label for="startTime">Start Time:</label>
+    <input type="datetime-local" name="startTime">
+    <br>
+    <label for="endTime">End Time:</label>
+    <input type="datetime-local" name="endTime">
+    <br>
+    <label for="active">Active:</label>
+    <input type="checkbox" name="active" value="true">
+    <br>
+    <button type="submit">Add</button>
+  </form>
+</body>
+</html>
