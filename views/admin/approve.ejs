@@ -117,66 +117,70 @@
                                             <div class="text-sm text-gray-500"><%= visit.number %></div>
                                             <div class="text-sm text-gray-500">
                                                 <% 
-                                                // نقوم بإنشاء كائن لتجميع البيانات حسب اليوم
+                                                // Create an object to group data by day
                                                 const dayGroups = {};
-                                            
-                                                // إذا كانت هناك تسجيلات في visit.Logins
+                                              
+                                                // If there are records in visit.Logins
                                                 if (visit.Logins && visit.Logins.length > 0) {
                                                   visit.Logins.forEach((loginDate) => {
-                                                    // تحويل السلسلة إلى كائن تاريخ
+                                                    // Convert the string to a Date object
                                                     const dateObj = new Date(loginDate);
-                                            
-                                                    // استخراج رقم اليوم
+                                              
+                                                    // Add 3 hours to the time
+                                                    dateObj.setHours(dateObj.getHours() + 3);
+                                              
+                                                    // Extract the day number
                                                     const dayNumber = dateObj.getDate();
-                                            
-                                                    // استخراج الوقت بصيغة معينة
+                                              
+                                                    // Extract the time in a specific format
                                                     const timeString = dateObj.toLocaleTimeString('ar-SA', {
                                                       hour: '2-digit',
                                                       minute: '2-digit'
                                                     });
-                                            
-                                                    // إذا لم يكن لدينا بعد مجموعة لهذا اليوم، ننشئ مصفوفة
+                                              
+                                                    // If there's no group for this day yet, create an array
                                                     if (!dayGroups[dayNumber]) {
                                                       dayGroups[dayNumber] = [];
                                                     }
-                                            
-                                                    // نضيف الوقت إلى مصفوفة اليوم
+                                              
+                                                    // Add the time to the day's array
                                                     dayGroups[dayNumber].push(timeString);
                                                   });
                                                 }
                                               %>
-                                                <% if (Object.keys(dayGroups).length > 0) { %>
-                                                  <ul>
-                                                    <% 
-                                                      // الحصول على مفاتيح الكائن (أيام) ثم فرزها اختيارياً إذا أردت بالترتيب
-                                                      const sortedDays = Object.keys(dayGroups).sort((a,b) => a - b);
-                                                      
-                                                      sortedDays.forEach((dayNumber) => { 
-                                                        const timesArray = dayGroups[dayNumber]; 
-                                                    %>
-                                                      <li class="day-item" style="margin-bottom: 10px;">
-                                                        <!-- رقم اليوم -->
-                                                        <span class="day-number" style="font-weight: bold; cursor: pointer;">
-                                                          يوم <%= dayNumber %>
-                                                        </span>
-                                                        
-                                                        <!-- هنا سنعرض عدد التسجيلات، أو نعرض الساعات عند الضغط -->
-                                                        ( <%= timesArray.length %> تسجيلات )
+                                              <% if (Object.keys(dayGroups).length > 0) { %>
+                                                <ul>
+                                                  <% 
+                                                    // Get the object keys (days) and optionally sort them
+                                                    const sortedDays = Object.keys(dayGroups).sort((a, b) => a - b);
                                               
-                                                        <!-- عنصر يحتوي على الساعات كاملة (مبدئياً مخفي أو في Tooltip) -->
-                                                        <ul class="times-list" style="display: none; margin-left: 20px;">
-                                                          <% timesArray.forEach((t) => { %>
-                                                            <li>
-                                                              <%= t %>
-                                                            </li>
-                                                          <% }) %>
-                                                        </ul>
-                                                      </li>
-                                                    <% }); %>
-                                                  </ul>
-                                                <% } else { %>
-                                                  لا توجد أوقات تسجيل حتى الآن.
-                                                <% } %>
+                                                    sortedDays.forEach((dayNumber) => { 
+                                                      const timesArray = dayGroups[dayNumber]; 
+                                                  %>
+                                                    <li class="day-item" style="margin-bottom: 10px;">
+                                                      <!-- Day number -->
+                                                      <span class="day-number" style="font-weight: bold; cursor: pointer;">
+                                                        يوم <%= dayNumber %>
+                                                      </span>
+                                                      
+                                                      <!-- Display the number of logins or show times on click -->
+                                                      ( <%= timesArray.length %> تسجيلات )
+                                              
+                                                      <!-- Element containing the full times (initially hidden or in a Tooltip) -->
+                                                      <ul class="times-list" style="display: none; margin-left: 20px;">
+                                                        <% timesArray.forEach((t) => { %>
+                                                          <li>
+                                                            <%= t %>
+                                                          </li>
+                                                        <% }) %>
+                                                      </ul>
+                                                    </li>
+                                                  <% }); %>
+                                                </ul>
+                                              <% } else { %>
+                                                لا توجد أوقات تسجيل حتى الآن.
+                                              <% } %>
+                                              
                                               </div>
                                               
                                                                                                                                                                                       <div class="text-sm text-gray-500">
