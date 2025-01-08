@@ -115,8 +115,71 @@
                                             <div class="text-sm font-medium text-gray-900"><%= visit.name %></div>
                                             <div class="text-sm text-gray-500"><%= visit.email %></div>
                                             <div class="text-sm text-gray-500"><%= visit.number %></div>
-                                            <div class="text-sm text-gray-500"><%= visit.Logins %></div>
                                             <div class="text-sm text-gray-500">
+                                                <% 
+                                                // نقوم بإنشاء كائن لتجميع البيانات حسب اليوم
+                                                const dayGroups = {};
+                                            
+                                                // إذا كانت هناك تسجيلات في visit.Logins
+                                                if (visit.Logins && visit.Logins.length > 0) {
+                                                  visit.Logins.forEach((loginDate) => {
+                                                    // تحويل السلسلة إلى كائن تاريخ
+                                                    const dateObj = new Date(loginDate);
+                                            
+                                                    // استخراج رقم اليوم
+                                                    const dayNumber = dateObj.getDate();
+                                            
+                                                    // استخراج الوقت بصيغة معينة
+                                                    const timeString = dateObj.toLocaleTimeString('ar-SA', {
+                                                      hour: '2-digit',
+                                                      minute: '2-digit'
+                                                    });
+                                            
+                                                    // إذا لم يكن لدينا بعد مجموعة لهذا اليوم، ننشئ مصفوفة
+                                                    if (!dayGroups[dayNumber]) {
+                                                      dayGroups[dayNumber] = [];
+                                                    }
+                                            
+                                                    // نضيف الوقت إلى مصفوفة اليوم
+                                                    dayGroups[dayNumber].push(timeString);
+                                                  });
+                                                }
+                                              %>
+                                                <% if (Object.keys(dayGroups).length > 0) { %>
+                                                  <ul>
+                                                    <% 
+                                                      // الحصول على مفاتيح الكائن (أيام) ثم فرزها اختيارياً إذا أردت بالترتيب
+                                                      const sortedDays = Object.keys(dayGroups).sort((a,b) => a - b);
+                                                      
+                                                      sortedDays.forEach((dayNumber) => { 
+                                                        const timesArray = dayGroups[dayNumber]; 
+                                                    %>
+                                                      <li class="day-item" style="margin-bottom: 10px;">
+                                                        <!-- رقم اليوم -->
+                                                        <span class="day-number" style="font-weight: bold; cursor: pointer;">
+                                                          يوم <%= dayNumber %>
+                                                        </span>
+                                                        
+                                                        <!-- هنا سنعرض عدد التسجيلات، أو نعرض الساعات عند الضغط -->
+                                                        ( <%= timesArray.length %> تسجيلات )
+                                              
+                                                        <!-- عنصر يحتوي على الساعات كاملة (مبدئياً مخفي أو في Tooltip) -->
+                                                        <ul class="times-list" style="display: none; margin-left: 20px;">
+                                                          <% timesArray.forEach((t) => { %>
+                                                            <li>
+                                                              <%= t %>
+                                                            </li>
+                                                          <% }) %>
+                                                        </ul>
+                                                      </li>
+                                                    <% }); %>
+                                                  </ul>
+                                                <% } else { %>
+                                                  لا توجد أوقات تسجيل حتى الآن.
+                                                <% } %>
+                                              </div>
+                                              
+                                                                                                                                                                                      <div class="text-sm text-gray-500">
                                                 <% if (visit.enterprise) { %>
                                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                                                         مؤسسة
@@ -166,6 +229,33 @@
           </form>
       </div>
   </div>
+  
+
+  <!-- كود جافاسكربت لإظهار/إخفاء الساعات عند الضغط -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // نحصل على جميع العناصر التي تمثل اليوم
+      const dayItems = document.querySelectorAll('.day-item');
+
+      dayItems.forEach((item) => {
+        // عنصر اليوم
+        const dayNumberEl = item.querySelector('.day-number');
+        // قائمة الأوقات
+        const timesListEl = item.querySelector('.times-list');
+
+        // عند الضغط على رقم اليوم
+        dayNumberEl.addEventListener('click', function() {
+          // تبديل الظهور/الإخفاء
+          if (timesListEl.style.display === 'none' || !timesListEl.style.display) {
+            timesListEl.style.display = 'block';
+          } else {
+            timesListEl.style.display = 'none';
+          }
+        });
+      });
+    });
+  </script>
+
   
 
     <script>
