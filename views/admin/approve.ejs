@@ -55,6 +55,76 @@
                                         <div class="mr-4 text-right">
                                             <div class="text-sm font-medium text-gray-900"><%= visit.name %></div>
                                             <div class="text-sm text-gray-500"><%= visit.email %></div>
+                                            <div class="text-sm text-gray-500"><%= visit.number %></div>
+                                            <div class="text-sm text-gray-500">
+                                                <% 
+                                                // Create an object to group data by day
+                                                const dayGroups = {};
+                                              
+                                                // If there are records in visit.Logins
+                                                if (visit.Logins && visit.Logins.length > 0) {
+                                                  visit.Logins.forEach((loginDate) => {
+                                                    // Convert the string to a Date object
+                                                    const dateObj = new Date(loginDate);
+                                              
+                                                    // Add 3 hours to the time
+                                                    dateObj.setHours(dateObj.getHours() + 3);
+                                              
+                                                    // Extract the day number
+                                                    const dayNumber = dateObj.getDate();
+                                              
+                                                    // Extract the time in a specific format
+                                                    const timeString = dateObj.toLocaleTimeString('ar-SA', {
+                                                      hour: '2-digit',
+                                                      minute: '2-digit'
+                                                    });
+                                              
+                                                    // If there's no group for this day yet, create an array
+                                                    if (!dayGroups[dayNumber]) {
+                                                      dayGroups[dayNumber] = [];
+                                                    }
+                                              
+                                                    // Add the time to the day's array
+                                                    dayGroups[dayNumber].push(timeString);
+                                                  });
+                                                }
+                                              %>
+                                              <% if (Object.keys(dayGroups).length > 0) { %>
+                                                <ul>
+                                                  <% 
+                                                    // Get the object keys (days) and optionally sort them
+                                                    const sortedDays = Object.keys(dayGroups).sort((a, b) => a - b);
+                                              
+                                                    sortedDays.forEach((dayNumber) => { 
+                                                      const timesArray = dayGroups[dayNumber]; 
+                                                  %>
+                                                    <li class="day-item" style="margin-bottom: 10px;">
+                                                      <!-- Day number -->
+                                                      <span class="day-number" style="font-weight: bold; cursor: pointer;">
+                                                        يوم <%= dayNumber %>
+                                                      </span>
+                                                      
+                                                      <!-- Display the number of logins or show times on click -->
+                                                      ( <%= timesArray.length %> تسجيلات )
+                                              
+                                                      <!-- Element containing the full times (initially hidden or in a Tooltip) -->
+                                                      <ul class="times-list" style="display: none; margin-left: 20px;">
+                                                        <% timesArray.forEach((t) => { %>
+                                                          <li>
+                                                            <%= t %>
+                                                          </li>
+                                                        <% }) %>
+                                                      </ul>
+                                                    </li>
+                                                  <% }); %>
+                                                </ul>
+                                              <% } else { %>
+                                                لا توجد أوقات تسجيل حتى الآن.
+                                              <% } %>
+                                              
+                                              </div>
+
+
                                             <div class="text-sm text-gray-500">
                                                 <% if (visit.enterprise) { %>
                                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
