@@ -158,7 +158,13 @@
     <button class="btn bg-blue-600 hover:bg-blue-700" onclick="document.getElementById('fileInput').click()">
       اختر ملف QR
     </button>
-    <input type="file" id="fileInput" accept="image/*" style="display:none;" />
+    <input 
+    type="file" 
+    id="fileInput" 
+    accept="image/*" 
+    capture="environment" 
+    style="display:none;"
+  />
 
     <!-- قائمة الملفات -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-8">
@@ -424,9 +430,16 @@
           if (data.isValid === false) {
             responseOutput.style.color = 'red';
             responseOutput.textContent = `ال QR منتهي او غير صالح`;
+            const fileInput = document.getElementById('fileInput');
+            fileInput.value = ''; // This clears the selected file
+
           } else {
             responseOutput.style.color = 'green';
             responseOutput.textContent = `مرحبا استاذ ${data.name} تم تسجيل الحضور بنجاح`;
+            alert(`مرحبا استاذ ${data.name} تم تسجيل الحضور بنجاح`)
+            const fileInput = document.getElementById('fileInput');
+            fileInput.value = ''; // This clears the selected file
+
           }
         })
         .catch(err => {
@@ -438,6 +451,7 @@
     fileInput.addEventListener('change', handleFileSelect);
 
     function handleFileSelect(event) {
+      console.log(event)
       const file = event.target.files[0];
       if (!file) return;
 
