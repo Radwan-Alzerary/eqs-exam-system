@@ -4,8 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>اليوم الافتراضي - <%= dayName %>
-  </title>
+  <title>اليوم الافتراضي - <%= dayName %></title>
 
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -149,78 +148,87 @@
 
     <!-- زر فتح كاميرا مودال -->
     <button class="btn bg-green-600 hover:bg-green-700" onclick="openCameraModal()">
-      تسجيل الحضور </button>
+      تسجيل الحضور (كاميرا)
+    </button>
+
+    <!-- زر لاختيار ملف لرمز QR -->
+    <p class="mt-4 text-gray-700">
+      أو اختر صورة تحتوي على رمز QR:
+    </p>
+    <button class="btn bg-blue-600 hover:bg-blue-700" onclick="document.getElementById('fileInput').click()">
+      اختر ملف QR
+    </button>
+    <input type="file" id="fileInput" accept="image/*" style="display:none;" />
 
     <!-- قائمة الملفات -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-8">
-      <% files.forEach(fileName=> {
-        const ext = fileName.split('.').pop().toLowerCase();
+      <% files.forEach(fileName => {
+          const ext = fileName.split('.').pop().toLowerCase();
 
-        // تعيين نوع الملف (type) لعرضه في <embed>
-        let fileType, embedType;
-        switch (ext) {
-        case 'pdf':
-        fileType = 'مستند PDF';
-        embedType = 'application/pdf';
-        break;
-        case 'mp4':
-        fileType = 'فيديو MP4';
-        embedType = 'video/mp4';
-        break;
-        case 'mov':
-        fileType = 'فيديو MOV';
-        embedType = 'video/quicktime';
-        break;
-        case 'mp3':
-        fileType = 'صوت MP3';
-        embedType = 'audio/mpeg';
-        break;
-        case 'wav':
-        fileType = 'صوت WAV';
-        embedType = 'audio/wav';
-        break;
-        case 'jpg':
-        case 'jpeg':
-        fileType = 'صورة JPEG';
-        embedType = 'image/jpeg';
-        break;
-        case 'png':
-        fileType = 'صورة PNG';
-        embedType = 'image/png';
-        break;
-        case 'gif':
-        fileType = 'صورة GIF';
-        embedType = 'image/gif';
-        break;
-        default:
-        // أنواع أخرى غير معروفة
-        fileType = 'نوع ملف غير معروف';
-        // يمكن وضع type عام مثل application/octet-stream
-        embedType = 'application/octet-stream';
-        break;
-        }
-        %>
-        <div class="bg-white rounded-lg shadow-md overflow-hidden">
-          <div class="p-6">
-            <h3 class="text-lg font-semibold text-gray-800 mb-2 truncate">
-              <%= fileName %>
-            </h3>
-            <p class="text-sm text-gray-600 mb-4">
-              <%= fileType %>
-            </p>
-            <div class="flex justify-between">
-              <!-- زر لفتح الـ Modal وعرض الملف -->
-              <button onclick="openViewer(
-                '/cloud/view/<%= dayName %>/<%= fileName %>', 
-                '<%= embedType %>', 
-                '<%= fileName %>'
-              )" class="text-green-500 hover:text-green-600">
-                عرض <i>👁️</i>
-              </button>
-            </div>
+          // تعيين نوع الملف (type) لعرضه في <embed>
+          let fileType, embedType;
+          switch (ext) {
+            case 'pdf':
+              fileType = 'مستند PDF';
+              embedType = 'application/pdf';
+              break;
+            case 'mp4':
+              fileType = 'فيديو MP4';
+              embedType = 'video/mp4';
+              break;
+            case 'mov':
+              fileType = 'فيديو MOV';
+              embedType = 'video/quicktime';
+              break;
+            case 'mp3':
+              fileType = 'صوت MP3';
+              embedType = 'audio/mpeg';
+              break;
+            case 'wav':
+              fileType = 'صوت WAV';
+              embedType = 'audio/wav';
+              break;
+            case 'jpg':
+            case 'jpeg':
+              fileType = 'صورة JPEG';
+              embedType = 'image/jpeg';
+              break;
+            case 'png':
+              fileType = 'صورة PNG';
+              embedType = 'image/png';
+              break;
+            case 'gif':
+              fileType = 'صورة GIF';
+              embedType = 'image/gif';
+              break;
+            default:
+              // أنواع أخرى غير معروفة
+              fileType = 'نوع ملف غير معروف';
+              embedType = 'application/octet-stream';
+              break;
+          }
+      %>
+      <div class="bg-white rounded-lg shadow-md overflow-hidden">
+        <div class="p-6">
+          <h3 class="text-lg font-semibold text-gray-800 mb-2 truncate">
+            <%= fileName %>
+          </h3>
+          <p class="text-sm text-gray-600 mb-4">
+            <%= fileType %>
+          </p>
+          <div class="flex justify-between">
+            <!-- زر لفتح الـ Modal وعرض الملف -->
+            <button onclick="openViewer(
+              '/cloud/view/<%= dayName %>/<%= fileName %>', 
+              '<%= embedType %>', 
+              '<%= fileName %>'
+            )" class="text-green-500 hover:text-green-600">
+              عرض <i>👁️</i>
+            </button>
           </div>
         </div>
-        <% }) %>
+      </div>
+      <% }) %>
     </div>
   </div>
 
@@ -267,6 +275,7 @@
     const toggleCameraBtn = document.getElementById('toggle-camera-btn');
     const manualCheckBtn = document.getElementById('manual-check-btn');
     const cameraModal = document.getElementById('cameraModal');
+    const fileInput = document.getElementById('fileInput');
 
     let useEnvironmentCamera = true; // Track which camera to use
     let currentStream = null;       // Store the active camera stream
@@ -310,29 +319,25 @@
       try {
         const constraints = {
           video: {
-            facingMode: { exact: facingMode }
+            facingMode: { ideal: facingMode } // استخدم ideal بدل exact لتفادي OverconstrainedError
           }
         };
         const stream = await navigator.mediaDevices.getUserMedia(constraints);
         currentStream = stream;
         video.srcObject = stream;
-        scanning = true; // Once camera is ready, start scanning
+        scanning = true;
         // Kick off scanning loop
         scanQRCodeLoop();
       } catch (err) {
-        // If exact constraint fails (e.g., user has no environment camera), fallback
-        if (facingMode === 'environment' && err.name === 'OverconstrainedError') {
-          try {
-            const fallbackStream = await navigator.mediaDevices.getUserMedia({ video: true });
-            currentStream = fallbackStream;
-            video.srcObject = fallbackStream;
-            scanning = true;
-            scanQRCodeLoop();
-          } catch (fallbackErr) {
-            showError(fallbackErr);
-          }
-        } else {
-          showError(err);
+        console.warn('Preferred camera failed, trying fallback:', err);
+        try {
+          const fallbackStream = await navigator.mediaDevices.getUserMedia({ video: true });
+          currentStream = fallbackStream;
+          video.srcObject = fallbackStream;
+          scanning = true;
+          scanQRCodeLoop();
+        } catch (fallbackErr) {
+          showError(fallbackErr);
         }
       }
     }
@@ -404,7 +409,7 @@
       }
     });
 
-    // POST data to server
+    // ------------- POST data to server -------------
     function postToServer(qrData) {
       fetch('/qr/usercheck/', {
         method: 'POST',
@@ -416,23 +421,55 @@
         .then(response => response.json())
         .then(data => {
           console.log('Server response:', data);
-          // Display server response in the UI:
-if(data.isValid === false)
-{
-  responseOutput.textContent = `ال QR منتهي او غير صالح`;
-
-}else{
-  responseOutput.textContent = `مرحبا استاذ ${data.name} تم تسجيل الحضور بنجاح`;
-
-}
+          if (data.isValid === false) {
+            responseOutput.style.color = 'red';
+            responseOutput.textContent = `ال QR منتهي او غير صالح`;
+          } else {
+            responseOutput.style.color = 'green';
+            responseOutput.textContent = `مرحبا استاذ ${data.name} تم تسجيل الحضور بنجاح`;
+          }
         })
         .catch(err => {
           console.error('Error posting QR data:', err);
         });
     }
+
+    // ------------- File Input Fallback -------------
+    fileInput.addEventListener('change', handleFileSelect);
+
+    function handleFileSelect(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const img = new Image();
+        img.onload = function () {
+          // الرسم على Canvas
+          const canvas = document.createElement('canvas');
+          const context = canvas.getContext('2d');
+          canvas.width = img.width;
+          canvas.height = img.height;
+          context.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+          // تحضير بيانات الصورة للاستخدام في jsQR
+          const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+          const code = jsQR(imageData.data, canvas.width, canvas.height);
+
+          if (code && code.data) {
+            output.textContent = `File QR Code: ${code.data}`;
+            postToServer(code.data);
+          } else {
+            output.textContent = 'لم يتم العثور على رمز QR في الصورة.';
+          }
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
   </script>
 
-  <!-- عرض الملفات في الـ Modal -->
+  <!-- عرض الملفات في الـ Modal (للعرض والتنزيل) -->
   <script>
     /**
      * فتح المودال وتضمين الملف في الـ embed + إعداد زر التنزيل
